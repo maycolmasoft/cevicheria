@@ -48,6 +48,7 @@ $controladores=$_SESSION['controladores'];
                       <li style="<?php echo getcontrolador("Ingredientes",$controladores) ?>"><a href="index.php?controller=Ingredientes&action=index">Ingredientes</a></li>
                       <li style="<?php echo getcontrolador("Productos",$controladores) ?>"><a href="index.php?controller=Productos&action=index">Productos</a></li>
                       <li style="<?php echo getcontrolador("Productos",$controladores) ?>"><a href="index.php?controller=Pedidos&action=index">Pedidos</a></li>
+                      <li style="<?php echo getcontrolador("Actividades",$controladores) ?>"><a href="index.php?controller=Actividades&action=index">Actividades</a></li>
                    
                     </ul>
                   </li>
