@@ -419,7 +419,6 @@
                         		    <div class="col-xs-12 col-md-2 col-lg-2" style="text-align: center; margin-top:22px">
                     		        <div class="form-group">
                         		    <button type="button" id="buscar_x_entregar" name="buscar_x_entregar" class="btn btn-info"><i class="glyphicon glyphicon-search"></i></button>
-                                	<button type="submit" id="reporte_x_entregar" name="reporte_x_entregar" class="btn btn-success"><i class="glyphicon glyphicon-print"></i></button>
                                 	
                                 	</div>
                                     </div>
@@ -467,7 +466,6 @@
                         		    <div class="col-xs-12 col-md-2 col-lg-2" style="text-align: center; margin-top:22px">
                     		        <div class="form-group">
                         		    <button type="button" id="buscar_entregados" name="buscar_entregados" class="btn btn-info"><i class="glyphicon glyphicon-search"></i></button>
-                                	<button type="submit" id="reporte_entregados" name="reporte_entregados" class="btn btn-success"><i class="glyphicon glyphicon-print"></i></button>
                                 	
                                 	</div>
                                     </div>

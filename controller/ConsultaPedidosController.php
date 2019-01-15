@@ -144,7 +144,7 @@ class ConsultaPedidosController extends ControladorBase{
 	                $html.='<td style="font-size: 11px;">'.$res->nombre_usuarios.'</td>';
 	                $html.='<td style="font-size: 11px;">'.date("d/m/Y", strtotime($res->creado)).'</td>';
 	                
-	                $html.='<td style="font-size: 18px;"><span class="pull-right"><a href="index.php?controller=ConsultaPedidos&action=generar_reporte_entregado&id_pedidos='.$res->id_pedidos.'" class="btn btn-info" style="font-size:65%;"><i class="glyphicon glyphicon-print"></i></a></span></td>';
+	                $html.='<td style="font-size: 18px;"><span class="pull-right"><a href="index.php?controller=ConsultaPedidos&action=generar_reporte_entregado&id_pedidos='.$res->id_pedidos.'" target="_blank" class="btn btn-warning" style="font-size:65%;"><i class="glyphicon glyphicon-print"></i></a></span></td>';
 	               
 	                $html.='</tr>';
 	            }
@@ -180,7 +180,8 @@ class ConsultaPedidosController extends ControladorBase{
 	public function search_x_entregar(){
 	
 		session_start();
-		
+		$id_rol = $_SESSION["id_rol"];
+	
 		$pedidos = new PedidosModel();
 		$where_to="";
 		$columnas = "pedidos.id_pedidos, 
@@ -242,7 +243,6 @@ class ConsultaPedidosController extends ControladorBase{
 				if($desde!="" && $hasta!=""){
 						
 					$where2=" AND DATE(pedidos.creado)  BETWEEN '$desde' AND '$hasta'";	
-						
 				}
 				
 				$where_to=$where.$where2;
@@ -286,7 +286,9 @@ class ConsultaPedidosController extends ControladorBase{
 				$html.='<th style="text-align: left;  font-size: 12px;">Usuario Reg.</th>';
 				$html.='<th style="text-align: left;  font-size: 12px;">Fecha Reg.</th>';
 				$html.='<th style="text-align: left;  font-size: 12px;"></th>';
+				if($id_rol==49){
 				$html.='<th style="text-align: left;  font-size: 12px;"></th>';
+				}
 				$html.='</tr>';
 				$html.='</thead>';
 				$html.='<tbody>';
@@ -313,8 +315,14 @@ class ConsultaPedidosController extends ControladorBase{
 					}
 					$html.='<td style="font-size: 11px;">'.$res->nombre_usuarios.'</td>';
 					$html.='<td style="font-size: 11px;">'.date("d/m/Y", strtotime($res->creado)).'</td>';
-					$html.='<td style="font-size: 18px;"><span class="pull-right"><a href="index.php?controller=ConsultaPedidos&action=generar_reporte_x_entregar&id_pedidos='.$res->id_pedidos.'" class="btn btn-info" style="font-size:65%;"><i class="glyphicon glyphicon-print"></i></a></span></td>';
-					$html.='<td style="font-size: 18px;"><span class="pull-right"><a href="index.php?controller=ConsultaPedidos&action=index&id_pedidos='.$res->id_pedidos.'" class="btn btn-success" style="font-size:65%;"><i class="glyphicon glyphicon-floppy-saved"></i></a></span></td>';
+					
+					$html.='<td style="font-size: 18px;"><span class="pull-right"><a href="index.php?controller=ConsultaPedidos&action=generar_reporte_x_entregar&id_pedidos='.$res->id_pedidos.'" target="_blank" class="btn btn-warning" style="font-size:65%;"><i class="glyphicon glyphicon-print"></i></a></span></td>';
+					
+					if($id_rol==49){
+					    
+					    $html.='<td style="font-size: 18px;"><span class="pull-right"><a href="index.php?controller=ConsultaPedidos&action=index&id_pedidos='.$res->id_pedidos.'" class="btn btn-success" style="font-size:65%;"><i class="glyphicon glyphicon-floppy-saved"></i></a></span></td>';
+					    
+					}
 					
 					$html.='</tr>';
 				}
@@ -556,6 +564,225 @@ class ConsultaPedidosController extends ControladorBase{
 	
 	
 	
+	public function  generar_reporte_entregado(){
+	    
+	    session_start();
+	    $pedidos = new PedidosModel();
+	    $pedidos_detalle = new PedidosDetalleModel();
+	    
+	    $html="";
+	    $cedula_usuarios = $_SESSION["cedula_usuarios"];
+	    $fechaactual = getdate();
+	    $dias = array("Domingo","Lunes","Martes","Miercoles","Jueves","Viernes","Sábado");
+	    $meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
+	    $fechaactual=$dias[date('w')]." ".date('d')." de ".$meses[date('n')-1]. " del ".date('Y') ;
+	    
+	    $directorio = $_SERVER ['DOCUMENT_ROOT'] . '/cevicheria';
+	    $dom=$directorio.'/view/dompdf/dompdf_config.inc.php';
+	    $domLogo=$directorio.'/view/images/agua.png';
+	    $logo = '<img src="'.$domLogo.'" alt="Responsive image" width="130" height="70">';
+	    
+	    
+	    
+	    if(!empty($cedula_usuarios)){
+	        
+	        
+	        if(isset($_GET["id_pedidos"])){
+	            
+	            
+	            $id_pedidos = $_GET["id_pedidos"];
+	            
+	            
+	            $columnas = "pedidos.id_pedidos,
+                              clientes.id_clientes,
+                              clientes.apellidos_clientes,
+                              clientes.nombres_clientes,
+                              clientes.identificacion_clientes,
+                              usuarios.id_usuarios,
+                              usuarios.cedula_usuarios,
+                              usuarios.nombre_usuarios,
+                              mesas.id_mesas,
+                              mesas.nombre_mesas,
+                              mesas.mesa_ocupada,
+                              pedidos.numero_pedidos,
+                              pedidos.valor_total_pedidos,
+                              pedidos.cancelado_pedido,
+                              pedidos.entregado_pedido,
+                              pedidos.creado,
+                              pedidos.modificado";
+	            
+	            $tablas   = "public.pedidos,
+                              public.clientes,
+                              public.usuarios,
+                              public.mesas";
+	            $where    = "pedidos.id_usuarios_registra = usuarios.id_usuarios AND
+                              pedidos.id_mesas = mesas.id_mesas AND
+                              clientes.id_clientes = pedidos.id_clientes AND pedidos.id_pedidos='$id_pedidos'";
+	            $id       = "pedidos.id_pedidos";
+	            
+	            
+	            $resultSetCabeza=$pedidos->getCondicionesDesc($columnas, $tablas, $where, $id);
+	            
+	            
+	            if(!empty($resultSetCabeza)){
+	                
+	                
+	                
+	                $_numero_pedido     =$resultSetCabeza[0]->numero_pedidos;
+	                $_numero_mesa       =$resultSetCabeza[0]->nombre_mesas;
+	                $_nombre_clientes   =$resultSetCabeza[0]->nombres_clientes;
+	                $_apellidos_clientes   =$resultSetCabeza[0]->apellidos_clientes;
+	                $_identificacion_clientes =$resultSetCabeza[0]->identificacion_clientes;
+	                
+	                
+	                $_cedula_usuarios       =$resultSetCabeza[0]->cedula_usuarios;
+	                $_nombre_usuarios       =$resultSetCabeza[0]->nombre_usuarios;
+	                $_estado_pedido         =$resultSetCabeza[0]->entregado_pedido;
+	                $_valor_total_pedidos   =$resultSetCabeza[0]->valor_total_pedidos;
+	                $_fecha_pedido          =date("d/m/Y", strtotime($resultSetCabeza[0]->creado));
+	                $_fecha_pedido=$dias[date('w')]." ".date('d')." de ".$meses[date('n')-1]. " del ".date('Y') ;
+	                
+	                
+	                
+	                
+	                $columnas1 = "pedidos_detalle.id_pedidos_detalle,
+                                  pedidos_detalle.id_pedidos,
+                                  productos.id_productos,
+                                  productos.nombre_productos,
+                                  productos.imagen_productos,
+                                  pedidos_detalle.cantidad_productos,
+                                  pedidos_detalle.valor_unitario,
+                                  pedidos_detalle.valor_total,
+                                  pedidos_detalle.entregado_pedido";
+	                
+	                $tablas1   = " public.pedidos_detalle,
+                                    public.productos";
+	                $where1    = "productos.id_productos = pedidos_detalle.id_productos AND pedidos_detalle.id_pedidos='$id_pedidos' AND pedidos_detalle.entregado_pedido='TRUE'";
+	                $id1      = "pedidos_detalle.id_pedidos_detalle";
+	                $resultSetDetalle=$pedidos_detalle->getCondicionesDesc($columnas1, $tablas1, $where1, $id1);
+	                
+	                $html.='<p style="text-align: right;">'.$logo.'<hr style="height: 2px; background-color: black;"></p>';
+	                $html.='<p style="text-align: right; font-size: 13px;"><b>Fecha Pedido:</b> '.$_fecha_pedido.'</p>';
+	                $html.='<p style="text-align: center; font-size: 16px;"><b>PEDIDO No. '.$_numero_pedido.'</b></p>';
+	                
+	                $html.='<table style="width: 100%;">';
+	                
+	                $html.='<tr>';
+	                $html.='<th colspan="4" style="text-align:left; font-size: 13px;">Identificación Cliente</th>';
+	                $html.='<th colspan="4" style="text-align:left; font-size: 13px;">Nombres y Apellidos Cliente</th>';
+	                $html.='<th colspan="2" style="text-align:left; font-size: 13px;">Número Mesa</th>';
+	                $html.='<th colspan="2" style="text-align:left; font-size: 13px;">Estado Pedido</th>';
+	                $html.='</tr>';
+	                
+	                $html.='<tr>';
+	                
+	                $html.='<td colspan="4" style="text-align:left; font-size: 13px;">'.$_identificacion_clientes.'</td>';
+	                $html.='<td colspan="4" style="text-align:left; font-size: 13px;">'.$_nombre_clientes.' '.$_apellidos_clientes.'</td>';
+	                $html.='<td colspan="2" style="text-align:left; font-size: 13px;">'.$_numero_mesa.'</td>';
+	                
+	                if($_estado_pedido=='f'){
+	                    $html.='<td colspan="2" style="text-align:left; font-size: 13px;">Pendiente</td>';
+	                }else{
+	                    $html.='<td colspan="2" style="text-align:left; font-size: 13px;">Entregado</td>';
+	                }
+	                
+	                $html.='</tr>';
+	                $html.='</table>';
+	                
+	                
+	                if(!empty($resultSetDetalle)){
+	                    
+	                    
+	                    
+	                    $html.= "<table style='width: 100%; margin-top:40px;' border=1 cellspacing=0>";
+	                    $html.= "<thead>";
+	                    $html.= "<tr>";
+	                    //  $html.='<th style="text-align: left;  font-size: 13px;"></th>';
+	                    $html.='<th style="text-align: left;  font-size: 13px;">Nombre Producto</th>';
+	                    $html.='<th style="text-align: left;  font-size: 13px;">Cantidad</th>';
+	                    $html.='<th style="text-align: left;  font-size: 13px;">Valor C/U</th>';
+	                    $html.='<th style="text-align: left;  font-size: 13px;">Valor Total</th>';
+	                    $html.='</tr>';
+	                    $html.='</thead>';
+	                    $html.='<tbody>';
+	                    
+	                    $i=0;
+	                    
+	                    foreach ($resultSetDetalle as $res)
+	                    {
+	                        
+	                        
+	                        
+	                        
+	                        $i++;
+	                        $html.='<tr>';
+	                        //  $html.='<td><img src="'.$directorio.'/view/DevuelveImagenView.php?id_valor='.$res->id_productos.'&id_nombre=id_productos&tabla=productos&campo=imagen_productos" width="80" height="60"></td>';
+	                        $html.='<td style="font-size: 11px;">'.$res->nombre_productos.'</td>';
+	                        $html.='<td style="font-size: 11px;">'.$res->cantidad_productos.'</td>';
+	                        $html.='<td style="font-size: 11px;">'.$res->valor_unitario.'</td>';
+	                        $html.='<td style="font-size: 11px;">'.$res->valor_total.'</td>';
+	                        $html.='</tr>';
+	                    }
+	                    
+	                    
+	                    $html.='</tbody>';
+	                    $html.='</table>';
+	                    
+	                    
+	                }
+	                
+	                
+	                $html.='<table style="width: 100%; margin-top:40px;">';
+	                
+	                $html.='<tr>';
+	                $html.='<th colspan="4" style="text-align:left; font-size: 13px;">Funcionario que toma el pedido</th>';
+	                $html.='<th colspan="4" style="text-align:left; font-size: 13px;"></th>';
+	                $html.='<th colspan="2" style="text-align:left; font-size: 13px;"></th>';
+	                $html.='<th colspan="2" style="text-align:left; font-size: 13px;"></th>';
+	                $html.='</tr>';
+	                
+	                $html.='<tr>';
+	                
+	                $html.='<td colspan="4" style="text-align:left; font-size: 13px;">'.$_nombre_usuarios.'</td>';
+	                $html.='<td colspan="4" style="text-align:left; font-size: 13px;"></td>';
+	                $html.='<td colspan="2" style="text-align:left; font-size: 13px;"></td>';
+	                $html.='<td colspan="2" style="text-align:left; font-size: 13px;"></td>';
+	                
+	                $html.='</tr>';
+	                $html.='</table>';
+	                
+	                
+	                
+	            }
+	            
+	            
+	            
+	            
+	            
+	            
+	            
+	            
+	            $this->report("PedidosDetalle",array( "resultSet"=>$html));
+	            die();
+	            
+	            
+	        }
+	        
+	        
+	        
+	        
+	    }else{
+	        
+	        $this->redirect("Usuarios","sesion_caducada");
+	        
+	    }
+	    
+	    
+	    
+	    
+	    
+	}
+	
 	
 	
 	public function generar_reporte_x_entregar(){
@@ -655,8 +882,6 @@ class ConsultaPedidosController extends ControladorBase{
                                     public.productos";
 				    $where1    = "productos.id_productos = pedidos_detalle.id_productos AND pedidos_detalle.id_pedidos='$id_pedidos' AND pedidos_detalle.entregado_pedido='FALSE'";
 				    $id1      = "pedidos_detalle.id_pedidos_detalle";
-				    
-				    
 				    $resultSetDetalle=$pedidos_detalle->getCondicionesDesc($columnas1, $tablas1, $where1, $id1);
 				    
 				    $html.='<p style="text-align: right;">'.$logo.'<hr style="height: 2px; background-color: black;"></p>';
@@ -666,8 +891,8 @@ class ConsultaPedidosController extends ControladorBase{
 				    $html.='<table style="width: 100%;">';
 				   
 				    $html.='<tr>';
-				    $html.='<th colspan="4" style="text-align:left; font-size: 13px;">Identificación</th>';
-				    $html.='<th colspan="4" style="text-align:left; font-size: 13px;">Nombre y Apellidos</th>';
+				    $html.='<th colspan="4" style="text-align:left; font-size: 13px;">Identificación Cliente</th>';
+				    $html.='<th colspan="4" style="text-align:left; font-size: 13px;">Nombres y Apellidos Cliente</th>';
 				    $html.='<th colspan="2" style="text-align:left; font-size: 13px;">Número Mesa</th>';
 				    $html.='<th colspan="2" style="text-align:left; font-size: 13px;">Estado Pedido</th>';
 				    $html.='</tr>';
@@ -682,7 +907,6 @@ class ConsultaPedidosController extends ControladorBase{
 				            $html.='<td colspan="2" style="text-align:left; font-size: 13px;">Pendiente</td>';
 				        }else{
 				            $html.='<td colspan="2" style="text-align:left; font-size: 13px;">Entregado</td>';
-				            
 				        }
 				   
 				    $html.='</tr>';
@@ -696,7 +920,7 @@ class ConsultaPedidosController extends ControladorBase{
 				        $html.= "<table style='width: 100%; margin-top:40px;' border=1 cellspacing=0>";
 				        $html.= "<thead>";
 				        $html.= "<tr>";
-				        $html.='<th style="text-align: left;  font-size: 13px;"></th>';
+				      //  $html.='<th style="text-align: left;  font-size: 13px;"></th>';
 				        $html.='<th style="text-align: left;  font-size: 13px;">Nombre Producto</th>';
 				        $html.='<th style="text-align: left;  font-size: 13px;">Cantidad</th>';
 				        $html.='<th style="text-align: left;  font-size: 13px;">Valor C/U</th>';
@@ -710,9 +934,12 @@ class ConsultaPedidosController extends ControladorBase{
 				        foreach ($resultSetDetalle as $res)
 				        {
 				           
+				            
+				            
+				            
 				            $i++;
 				            $html.='<tr>';
-				            $html.='<td><img src="'.$directorio.'/view/DevuelveImagenView.php?id_valor='.$res->id_productos.'&id_nombre=id_productos&tabla=productos&campo=imagen_productos" width="80" height="60"></td>';
+				          //  $html.='<td><img src="'.$directorio.'/view/DevuelveImagenView.php?id_valor='.$res->id_productos.'&id_nombre=id_productos&tabla=productos&campo=imagen_productos" width="80" height="60"></td>';
 				            $html.='<td style="font-size: 11px;">'.$res->nombre_productos.'</td>';
 				            $html.='<td style="font-size: 11px;">'.$res->cantidad_productos.'</td>';
 				            $html.='<td style="font-size: 11px;">'.$res->valor_unitario.'</td>';
