@@ -57,6 +57,7 @@
         	   $(document).ready( function (){
         		   pone_espera();
         		   load_productos(1);
+        		   load_productos_inactivos(1);
 	   			});
 
         	   function pone_espera(){
@@ -108,13 +109,135 @@
            		   }
 
 
+
+
+        	   function load_productos_inactivos(pagina){
+
+        		   var search=$("#search_productos_inactivos").val();
+                   var con_datos={
+           					  action:'ajax',
+           					  page:pagina
+           					  };
+                 $("#load_productos_inactivos_registrados").fadeIn('slow');
+           	     $.ajax({
+           	               beforeSend: function(objeto){
+           	                 $("#load_productos_inactivos_registrados").html('<center><img src="view/images/ajax-loader.gif"> Cargando...</center>')
+           	               },
+           	               url: 'index.php?controller=Productos&action=index11&search='+search,
+           	               type: 'POST',
+           	               data: con_datos,
+           	               success: function(x){
+           	                 $("#productos_inactivos_registrados").html(x);
+           	               	 $("#tabla_productos_inactivos").tablesorter(); 
+           	                 $("#load_productos_inactivos_registrados").html("");
+           	               },
+           	              error: function(jqXHR,estado,error){
+           	                $("#productos__inactivos_registrados").html("Ocurrio un error al cargar la informacion de Productos..."+estado+"    "+error);
+           	              }
+           	            });
+
+           		   }
        		   
         </script>
         
         
         
         
-      		 
+      		  <script >
+		$(document).ready(function(){
+
+		    // cada vez que se cambia el valor del combo
+		    $("#Guardar").click(function() 
+			{
+		   
+		    	var id_tipo_productos = $("#id_tipo_productos").val();
+		    	var nombre_productos = $("#nombre_productos").val();
+		    	var valor_productos = $("#valor_productos").val();
+		    	var id_estado = $("#id_estado").val();
+		    	var imagen_productos = $("#imagen_productos").val();
+		    
+		   				
+		    	if (id_tipo_productos == 0)
+		    	{
+			    	
+		    		$("#mensaje_id_tipo_productos").text("Seleccione Tipo");
+		    		$("#mensaje_id_tipo_productos").fadeIn("slow"); //Muestra mensaje de error
+		            return false;
+			    }
+		    	else 
+		    	{
+		    		$("#mensaje_id_tipo_productos").fadeOut("slow"); //Muestra mensaje de error
+		            
+				}
+
+
+
+		    	if (nombre_productos == "")
+		    	{
+			    	
+		    		$("#mensaje_nombre_productos").text("Ingrese Nombre");
+		    		$("#mensaje_nombre_productos").fadeIn("slow"); //Muestra mensaje de error
+		            return false;
+			    }
+		    	else 
+		    	{
+		    		$("#mensaje_nombre_productos").fadeOut("slow"); //Muestra mensaje de error
+		            
+				}
+
+
+
+		    	if (valor_productos == 0.00)
+		    	{
+			    	
+		    		$("#mensaje_valor_productos").text("Ingrese Valor");
+		    		$("#mensaje_valor_productos").fadeIn("slow"); //Muestra mensaje de error
+		            return false;
+			    }
+		    	else 
+		    	{
+		    		$("#mensaje_valor_productos").fadeOut("slow"); //Muestra mensaje de error
+		            
+				}
+
+
+
+		    	if (id_estado == 0)
+		    	{
+			    	
+		    		$("#mensaje_id_estado").text("Seleccione");
+		    		$("#mensaje_id_estado").fadeIn("slow"); //Muestra mensaje de error
+		            return false;
+			    }
+		    	else 
+		    	{
+		    		$("#mensaje_id_estado").fadeOut("slow"); //Muestra mensaje de error
+		            
+				}
+
+
+				
+		    
+			}); 
+
+	
+				$( "#id_tipo_productos" ).focus(function() {
+					$("#mensaje_id_tipo_productos").fadeOut("slow");
+    			});
+				$( "#nombre_productos" ).focus(function() {
+					$("#mensaje_nombre_productos").fadeOut("slow");
+    			});
+				$( "#valor_productos" ).focus(function() {
+					$("#mensaje_valor_productos").fadeOut("slow");
+    			});
+				$( "#id_estado" ).focus(function() {
+					$("#mensaje_id_estado").fadeOut("slow");
+    			});
+				
+				
+	}); 
+
+	</script>
 		        
         
         
@@ -125,9 +248,9 @@
 			{
 		    	$('#id_tipo_productos').val("0");
 				$('#nombre_productos').val("");
-				$('#valor_productos').val("");
+				$('#valor_productos').val("0.00");
 				$('#imagen_productos').val("");
-						     
+				$('#id_estado').val("0");		     
 		    }); 
 		    }); 
 			</script>
@@ -240,15 +363,34 @@
                                     </div>
                                     </div>
                                     
-                                   <div class="col-lg-2 col-xs-12 col-md-2">
-                        		   <div class="form-group">
-                                                      <label for="valor_productos" class="control-label">Valor Producto:</label>
-                                                      <input type="number" class="form-control" id="valor_productos" name="valor_productos" value="<?php echo $resEdit->valor_productos; ?>"  placeholder="valor..">
-                                                      <div id="mensaje_valor_productos" class="errores"></div>
-                                    </div>
-                                    </div>
+                             
                                     
-                                    <div class="col-lg-3 col-xs-12 col-md-3">
+                                     <div class="col-lg-2 col-xs-12 col-md-2">
+                    		    <div class="form-group">
+                                                      <label for="valor_productos" class="control-label">ULT Precio</label>
+                                                      <input type="text" class="form-control cantidades1" id="valor_productos" name="valor_productos" value='<?php echo $resEdit->valor_productos; ?>' 
+                                                      data-inputmask="'alias': 'numeric', 'autoGroup': true, 'digits': 2, 'digitsOptional': false">
+                                                      <div id="mensaje_valor_productos" class="errores"></div>
+                                </div>
+                                </div>
+                                    
+                                    
+                                <div class="col-lg-2 col-xs-12 col-md-2">
+                    		    <div class="form-group">
+                                                          <label for="id_estado" class="control-label">Estado:</label>
+                                                          <select name="id_estado" id="id_estado"  class="form-control" >
+                                                          <option value="0" selected="selected">--Seleccione--</option>
+                        								  
+                        								  <?php foreach($resultEst as $res) {?>
+                        										<option value="<?php echo $res->id_estado; ?>" <?php if ($res->id_estado == $resEdit->id_estado )  echo  ' selected="selected" '  ;  ?>><?php echo $res->nombre_estado; ?> </option>
+                        							        <?php } ?>
+                        							      
+                        								  </select> 
+                                                          <div id="mensaje_id_estado" class="errores"></div>
+                                </div>
+                    		    </div>
+                    		    
+                                    <div class="col-lg-2 col-xs-12 col-md-2">
                         		    <div class="form-group">
                                                           <label for="imagen_productos" class="control-label">Imagen Productos:</label>
                                                           <input type="file" class="form-control" id="imagen_productos" name="imagen_productos" value="">
@@ -256,7 +398,7 @@
                                     </div>
                         		    </div>
                         		
-                                    
+                               
             </div>        		   
                     	      
     
@@ -307,21 +449,43 @@
                                     </div>
                                     </div>
                                     
-                                   <div class="col-lg-2 col-xs-12 col-md-2">
-                        		   <div class="form-group">
-                                                      <label for="valor_productos" class="control-label">Valor Producto:</label>
-                                                      <input type="number" class="form-control" id="valor_productos" name="valor_productos" value=""  placeholder="valor..">
-                                                      <div id="mensaje_valor_productos" class="errores"></div>
-                                    </div>
-                                    </div>
+                                 
                                     
-                                    <div class="col-lg-3 col-xs-12 col-md-3">
+                                <div class="col-lg-2 col-xs-12 col-md-2">
+                    		    <div class="form-group">
+                                                      <label for="valor_productos" class="control-label">ULT Precio</label>
+                                                      <input type="text" class="form-control cantidades1" id="valor_productos" name="valor_productos" value='0.00' 
+                                                      data-inputmask="'alias': 'numeric', 'autoGroup': true, 'digits': 2, 'digitsOptional': false">
+                                                      <div id="mensaje_valor_productos" class="errores"></div>
+                                </div>
+                                </div>
+                                    
+                                    
+                                    <div class="col-lg-2 col-xs-12 col-md-2">
+                    		    <div class="form-group">
+                                                          <label for="id_estado" class="control-label">Estado:</label>
+                                                          <select name="id_estado" id="id_estado"  class="form-control" >
+                                                          <option value="0" selected="selected">--Seleccione--</option>
+                        								  
+                        								  <?php foreach($resultEst as $res) {?>
+                        										<option value="<?php echo $res->id_estado; ?>" ><?php echo $res->nombre_estado; ?> </option>
+                        							        <?php } ?>
+                        							      
+                        								  </select> 
+                                                          <div id="mensaje_id_estado" class="errores"></div>
+                                </div>
+                    		    </div>
+                                    
+                                    <div class="col-lg-2 col-xs-12 col-md-2">
                         		    <div class="form-group">
                                                           <label for="imagen_productos" class="control-label">Imagen Productos:</label>
                                                           <input type="file" class="form-control" id="imagen_productos" name="imagen_productos" value="">
                                                           <div id="mensaje_imagen_productos" class="errores"></div>
                                     </div>
                         		    </div>
+                        		    
+                        		    
+                        		
                         		
                                     
             </div>        		   
@@ -375,7 +539,8 @@
                    <div class='nav-tabs-custom'>
           	       <ul id="myTabs" class="nav nav-tabs">
                  
-                    <li id="nav-activos" class="active"><a href="#activos" data-toggle="tab">Productos</a></li>
+                    <li id="nav-activos" class="active"><a href="#activos" data-toggle="tab">Productos Activos</a></li>
+                     <li id="nav-inativos"><a href="#inactivos" data-toggle="tab" >Productos Inactivos</a></li>
                    </ul>
 				
 				
@@ -395,6 +560,16 @@
 				</div>
 				
 				
+				   <div class="tab-pane" id="inactivos">
+               
+					<div class="pull-right" style="margin-right:11px;">
+					<input type="text" value="" class="form-control" id="search_productos_inactivos" name="search_productos_inactivos" onkeyup="load_productos_inactivos(1)" placeholder="search.."/>
+					</div>
+					
+					<div id="load_productos_inactivos_registrados" ></div>	
+					<div id="productos_inactivos_registrados"></div>	
+				
+				</div>
 				
 				
 				
@@ -467,6 +642,11 @@
 	<script src="view/js/jquery.inputmask.bundle.js"></script>
 	<!-- codigo de las funciones -->
 
+       <script>
+      $(document).ready(function(){
+      $(".cantidades1").inputmask();
+      });
+	  </script>
 	
   </body>
 </html>   
