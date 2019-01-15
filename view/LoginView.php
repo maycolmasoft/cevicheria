@@ -2,76 +2,76 @@
 <html lang="en">
   <head>
     
+    <title>Cevicheria</title>
 
-    <title>Login</title>
-
-	  
-  	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <!-- Meta, title, CSS, favicons, etc. -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!-- Bootstrap -->
-    <link href="view/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link href="view/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet">
-    <!-- NProgress -->
-    <link href="view/vendors/nprogress/nprogress.css" rel="stylesheet">
-    <!-- Animate.css -->
-    <link href="view/vendors/animate.css/animate.min.css" rel="stylesheet">
-
-    <!-- Custom Theme Style -->
-    <link href="view/build/css/custom.min.css" rel="stylesheet">
+   
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->	
+    	<link rel="icon" type="image/png" href="view/bootstrap/otros/login/images/icons/favicon.ico"/>
+    <!--===============================================================================================-->
+    	<link rel="stylesheet" type="text/css" href="view/bootstrap/otros/login/vendor/bootstrap/css/bootstrap.min.css">
+    <!--===============================================================================================-->
+    	<link rel="stylesheet" type="text/css" href="view/bootstrap/otros/login/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
     
-       <script src="view/css/jquery.js"></script>
-	  <script src="view/css/bootstrapValidator.min.js"></script>
-	  <script src="view/css/ValidarLogin.js"></script>
+    <!--===============================================================================================-->
+    	
+    	<link rel="stylesheet" type="text/css" href="view/bootstrap/otros/login/css/main.css">
+    <!--===============================================================================================-->
     
   </head>
 
-  <body class="login">
-    <div>
-      <a class="hiddenanchor" id="signup"></a>
-      <a class="hiddenanchor" id="signin"></a>
+  <body>
+  
+  
+  <div class="limiter">
+		<div class="container-login100">
+			<div class="wrap-login100">
+				<div class="login100-pic js-tilt" data-tilt>
+					<img src="fotografias_usuarios/logo.png" alt="IMG">
+				</div>
 
-      <div class="login_wrapper">
-        <div class="animate form login_form">
-          <section class="login_content">
-            <img src="view/images/agua.png" width="200" height="140">
-            <form id="form-login" action="<?php echo $helper->url("Usuarios","Loguear"); ?>" method="post" >
-             
-              <h1>Iniciar Sesión</h1>
-              <div>
-                <input id="usuario" name="usuario" type="text" class="form-control" placeholder="cedula.."/>
-              </div>
-              <div>
-                <input id="clave" name="clave"   type="password" class="form-control" placeholder="password.."/>
-              </div>
-              <div>
-              	<button type="submit"  class="btn btn-success" ><i class="fa fa-unlock" aria-hidden="true"></i> Login</button>
-                <button type="submit" id="Cancelar" name="Cancelar" onclick="this.form.action='<?php echo $helper->url("Usuarios","Loguear"); ?>'" class="btn btn-primary"><i class="fa fa-times" aria-hidden="true"></i> Cancelar</button>
-          		
-              
-              </div>
+				
+				<form class="login100-form validate-form" action="<?php echo $helper->url("Usuarios","Loguear"); ?>" method="post" >
+					<span class="login100-form-title">
+						Iniciar Sesion
+					</span>
 
-              <div class="clearfix"></div>
-			   <div class="separator">
-                <div class="clearfix"></div>
-                <div>
-                 <p><a href="<?php echo $helper->url("Clientes","Registrarse"); ?>" >Registrarse</a> </p>
-                 <p><a href="<?php echo $helper->url("Usuarios","resetear_clave_inicio"); ?>" >Olvidaste tu Clave</a> </p>
-                 <p>©2018 All Rights Reserved</p>
-                </div>
-              </div>
-              
-              
-              
-              
-             
-                       
-                    	
-                              <?php if (isset($resultSet)) {?>
+					<div class="wrap-input100 validate-input" data-validate = "Cedula es requerida">
+						<input class="input100" type="text" id="usuario" name="usuario" placeholder="Cedula..">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-envelope" aria-hidden="true"></i>
+						</span>
+					</div>
+
+					<div class="wrap-input100 validate-input" data-validate = "Password es requerido">
+						<input class="input100" type="password" id="clave" name="clave" placeholder="Password..">
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock" aria-hidden="true"></i>
+						</span>
+					</div>
+					
+					<div class="container-login100-form-btn">
+						<button type="submit" class="login100-form-btn">
+							Login
+						</button>
+					</div>
+
+					<div class="text-center p-t-12">
+						<span class="txt1">
+							Olvido su
+						</span>
+						<a class="txt2" href="<?php echo $helper->url("Usuarios","resetear_clave_inicio"); ?>">
+							Usuario / Clave
+						</a>
+					</div>
+
+					
+						<br><br>
+							
+							  <?php if (isset($resultSet)) {?>
 							<?php if ($resultSet != "") {?>
 						
 								 <?php if ($error == TRUE) {?>
@@ -95,18 +95,39 @@
 							
 					        <?php } ?>
 					        <?php } ?>  
-                    		   
-              
-            </form>
-          </section>
-          
-     
-          
-        </div>
-
-              </div>
-    </div>
+						
+					
+					
+					
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	
+  
+  
+  
+  
+				        
+					        
     
+    
+    
+    
+<!--===============================================================================================-->	
+	<script src="view/bootstrap/otros/login/vendor/jquery/jquery-3.2.1.min.js"></script>
+<!--===============================================================================================-->
+	<script src="view/bootstrap/otros/login/vendor/bootstrap/js/bootstrap.min.js"></script>
+<!--===============================================================================================-->
+	<script src="view/bootstrap/otros/login/vendor/tilt/tilt.jquery.min.js"></script>
+	<script >
+		$('.js-tilt').tilt({
+			scale: 1.1
+		})
+	</script>
+<!--===============================================================================================-->
+	<script src="view/bootstrap/otros/login/js/main.js"></script>
     
    
   </body>
