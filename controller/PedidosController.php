@@ -825,138 +825,125 @@ class PedidosController extends ControladorBase{
         session_start();
         $resultado = null;
         $usuarios=new UsuariosModel();
+        $pedidos = null; $pedidos = new PedidosModel();
         
         if (isset(  $_SESSION['nombre_usuarios']) )
         {
             
-            if (isset ($_POST["cedula_clientes"]))
+            if (isset ($_POST["id_clientes"]))
             {
-                die('llego');
-                $_cedula_usuarios    = $_POST["cedula_usuarios"];
-                $_nombre_usuarios     = $_POST["nombre_usuarios"];
-                //$_usuario_usuario     = $_POST["usuario_usuario"];
-                $_clave_usuarios      = $usuarios->encriptar($_POST["clave_usuarios"]);
-                $_pass_sistemas_usuarios      = $_POST["clave_usuarios"];
-                $_telefono_usuarios   = $_POST["telefono_usuarios"];
-                $_celular_usuarios    = $_POST["celular_usuarios"];
-                $_correo_usuarios     = $_POST["correo_usuarios"];
-                $_id_rol             = $_POST["id_rol"];
-                $_id_estado          = $_POST["id_estado"];
-                
-                $_id_usuarios          = $_POST["id_usuarios"];
+               
+                $_id_clientes   = $_POST["id_clientes"];
+                $_id_mesas      = $_POST['id_mesa_selecionada'];
+                $_id_usuario    = $_SESSION['id_usuarios'];
+                $_id_rol        = $_SESSION['id_rol'];
                 
                 
-                if($_id_usuarios > 0){
+                //agregar numero pedido 
+                $numero_pedido='0';
+                
+                //traer numero pedido
+                
+                $columna="*";
+                $tabla="consecutivos";
+                $where="nombre_consecutivos='PEDIDOS'";
+                
+                $resultado = $pedidos->getCondiciones($columna,$tabla,$where,"id_consecutivos");
+                
+                $numero_pedido = $resultado[0]->real_consecutivos;
+                
+                $valor_total_pedidos=0.0;
+                
+                
+                $funcion = "ins_pedidos";
+                
+                $parametros = "'$_id_clientes',
+		    				   '$_id_usuario',
+		    				   '$_id_mesas',
+		    	               '$numero_pedido',
+		    	               '$valor_total_pedidos'";
+                
+                $pedidos->setFuncion($funcion);
+                $pedidos->setParametros($parametros);
+                $resultadoinsert=$pedidos->Insert();
+                
+                $columna="pedidos.id_clientes, 
+                          pedidos.id_usuarios_registra, 
+                          pedidos.id_mesas, 
+                          pedidos.numero_pedidos, 
+                          pedidos.id_pedidos";
+                
+                $tabla="public.pedidos";
+                
+                $actualizado = $pedidos->UpdateBy("real_consecutivos = real_consecutivos + 1 ","consecutivos","nombre_consecutivos='PEDIDOS'");
+                
+                $where="numero_pedidos='$numero_pedido' AND  id_usuarios_registra='$_id_usuario' AND id_clientes = '$_id_clientes' AND id_mesas = '$_id_mesas'";
+                
+                $resultado = $pedidos->getCondiciones($columna,$tabla,$where,"id_pedidos");
+                
+                $pedido_id = $resultado[0]->id_pedidos;
+                
+                if($pedido_id>0){
                     
+                    $pedidos_detalle = null; $pedidos_detalle = new PedidosDetalleModel();
                     
-                    if ($_FILES['fotografia_usuarios']['tmp_name']!="")
-                    {
-                        
-                        $directorio = $_SERVER['DOCUMENT_ROOT'].'/aguafacturacion/fotografias_usuarios/';
-                        
-                        $nombre = $_FILES['fotografia_usuarios']['name'];
-                        $tipo = $_FILES['fotografia_usuarios']['type'];
-                        $tamano = $_FILES['fotografia_usuarios']['size'];
-                        
-                        move_uploaded_file($_FILES['fotografia_usuarios']['tmp_name'],$directorio.$nombre);
-                        $data = file_get_contents($directorio.$nombre);
-                        $imagen_usuarios = pg_escape_bytea($data);
-                        
-                        
-                        $colval = "cedula_usuarios= '$_cedula_usuarios', nombre_usuarios = '$_nombre_usuarios',  clave_usuarios = '$_clave_usuarios', pass_sistemas_usuarios='$_pass_sistemas_usuarios',  telefono_usuarios = '$_telefono_usuarios', celular_usuarios = '$_celular_usuarios', correo_usuarios = '$_correo_usuarios', id_rol = '$_id_rol', id_estado = '$_id_estado', fotografia_usuarios ='$imagen_usuarios'";
-                        $tabla = "usuarios";
-                        $where = "id_usuarios = '$_id_usuarios'";
-                        $resultado=$usuarios->UpdateBy($colval, $tabla, $where);
-                        
-                    }
-                    else
-                    {
-                        
-                        $colval = "cedula_usuarios= '$_cedula_usuarios', nombre_usuarios = '$_nombre_usuarios',  clave_usuarios = '$_clave_usuarios', pass_sistemas_usuarios='$_pass_sistemas_usuarios',  telefono_usuarios = '$_telefono_usuarios', celular_usuarios = '$_celular_usuarios', correo_usuarios = '$_correo_usuarios', id_rol = '$_id_rol', id_estado = '$_id_estado'";
-                        $tabla = "usuarios";
-                        $where = "id_usuarios = '$_id_usuarios'";
-                        $resultado=$usuarios->UpdateBy($colval, $tabla, $where);
-                        
-                    }
+                    $col_temp = "temp_pedidos.id_temp_pedidos, 
+                              temp_pedidos.id_clientes, 
+                              temp_pedidos.id_usuarios, 
+                              temp_pedidos.id_productos, 
+                              temp_pedidos.cantidad_temp_pedidos, 
+                              temp_pedidos.estado_temp_pedidos, 
+                              temp_pedidos.id_mesas, 
+                              productos.valor_productos"; 
                     
+                    $tab_temp="public.temp_pedidos, 
+                             public.productos"; 
                     
+                    $where_temp="productos.id_productos = temp_pedidos.id_productos AND 
+                                temp_pedidos.id_clientes='$_id_clientes' AND temp_pedidos.id_mesas='$_id_mesas'";
                     
-                }else{
+                    $resultTemp = $pedidos->getCondiciones($col_temp,$tab_temp,$where_temp,"temp_pedidos.id_temp_pedidos");
                     
-                    
-                    
-                    
-                    if ($_FILES['fotografia_usuarios']['tmp_name']!="")
-                    {
+                    if(!empty($resultTemp)){
                         
-                        $directorio = $_SERVER['DOCUMENT_ROOT'].'/aguafacturacion/fotografias_usuarios/';
+                        $funcion = "ins_pedidos_detalle";
                         
-                        $nombre = $_FILES['fotografia_usuarios']['name'];
-                        $tipo = $_FILES['fotografia_usuarios']['type'];
-                        $tamano = $_FILES['fotografia_usuarios']['size'];
-                        
-                        move_uploaded_file($_FILES['fotografia_usuarios']['tmp_name'],$directorio.$nombre);
-                        $data = file_get_contents($directorio.$nombre);
-                        $imagen_usuarios = pg_escape_bytea($data);
-                        
-                        
-                        $funcion = "ins_usuarios";
-                        $parametros = "'$_cedula_usuarios',
-		    				   '$_nombre_usuarios',
-		    				   '$_clave_usuarios',
-		    	               '$_pass_sistemas_usuarios',
-		    	               '$_telefono_usuarios',
-		    	               '$_celular_usuarios',
-		    	               '$_correo_usuarios',
-		    	               '$_id_rol',
-		    	               '$_id_estado',
-		    	               '$imagen_usuarios'";
-                        $usuarios->setFuncion($funcion);
-                        $usuarios->setParametros($parametros);
-                        $resultado=$usuarios->Insert();
-                        
-                    }
-                    else
-                    {
-                        
-                        $where_TO = "cedula_usuarios = '$_cedula_usuarios'";
-                        $result=$usuarios->getBy($where_TO);
-                        
-                        if ( !empty($result) )
-                        {
+                        foreach ($resultTemp as $res){
                             
-                            $colval = "nombre_usuarios = '$_nombre_usuarios',  clave_usuarios = '$_clave_usuarios', pass_sistemas_usuarios='$_pass_sistemas_usuarios',  telefono_usuarios = '$_telefono_usuarios', celular_usuarios = '$_celular_usuarios', correo_usuarios = '$_correo_usuarios', id_rol = '$_id_rol', id_estado = '$_id_estado'";
-                            $tabla = "usuarios";
-                            $where = "cedula_usuarios = '$_cedula_usuarios'";
-                            $resultado=$usuarios->UpdateBy($colval, $tabla, $where);
-                        }
-                        else{
+                            $producto_id = $res->id_productos;
+                            $cantidad_producto = $res->cantidad_temp_pedidos;
+                            $valor_producto = $res->valor_productos;
+                            $valor_total = $cantidad_producto * $valor_producto;
                             
-                            $imagen_usuarios="";
+                            $parametros = "'$pedido_id',
+		    				   '$producto_id',
+		    				   '$cantidad_producto',
+		    	               '$valor_producto',
+		    	               '$valor_total',
+                                'f'";
                             
-                            $funcion = "ins_usuarios";
-                            $parametros = "'$_cedula_usuarios',
-		        	'$_nombre_usuarios',
-		        	'$_clave_usuarios',
-		        	'$_pass_sistemas_usuarios',
-		        	'$_telefono_usuarios',
-		        	'$_celular_usuarios',
-		        	'$_correo_usuarios',
-		        	'$_id_rol',
-		        	'$_id_estado',
-		        	'$imagen_usuarios'";
-                            $usuarios->setFuncion($funcion);
-                            $usuarios->setParametros($parametros);
-                            $resultado=$usuarios->Insert();
+                            $pedidos_detalle->setFuncion($funcion);
+                            $pedidos_detalle->setParametros($parametros);
+                            $resultado=$pedidos_detalle->Insert();
                         }
                         
                     }
+                    
+                    //actualiza mesa
+                    $actualizado = $pedidos->UpdateBy("mesa_ocupada='f'","mesas","id_mesas='$_id_mesas'");
+                    
+                    //eliminacion de temporal
+                    $temp_pedidos = new TempPedidosModel();
+                    $where = "id_clientes='$_id_clientes' AND id_mesas='$_id_mesas'";
+                    $resultado=$temp_pedidos->deleteById($where);
+                    
                     
                     
                 }
                 
+                               
                 
-                $this->redirect("Usuarios", "index");
+                $this->redirect("Pedidos", "index");
             }
             
         }else{
