@@ -393,8 +393,9 @@
                 <div class="tab-pane active" id="entregar">
                 
 					
-				<form  action="<?php echo $helper->url("ConsultaPedidos","generar_reporte"); ?>" method="post" enctype="multipart/form-data" target="_blank"  class="col-lg-12 col-md-12 col-xs-12">
+				<form  action="<?php echo $helper->url("ConsultaPedidos","generar_reporte_x_entregar"); ?>" method="post" enctype="multipart/form-data" target="_blank"  class="col-lg-12 col-md-12 col-xs-12">
                   <div class="row" style="margin-left:1px;">
+									
 									<div class="col-lg-2 col-xs-12 col-md-2">
                         		    <div class="form-group">
                                                           <label for="desde_x_entregar" class="control-label">Desde:</label>
@@ -402,6 +403,8 @@
                                                           <div id="mensaje_desde_x_entregar" class="errores"></div>
                                     </div>
                         		    </div>
+                        		    
+                        		    
                         		    
                         		    <div class="col-lg-2 col-xs-12 col-md-2">
                         		    <div class="form-group">
@@ -411,6 +414,7 @@
                                                
                                     </div>
                                     </div>
+                        		    
                         		    
                         		    <div class="col-xs-12 col-md-2 col-lg-2" style="text-align: center; margin-top:22px">
                     		        <div class="form-group">
@@ -441,7 +445,7 @@
 				<div class="tab-pane" id="entregados">
                
                
-               	<form  action="<?php echo $helper->url("ConsultaPedidos","generar_reporte"); ?>" method="post" enctype="multipart/form-data" target="_blank"  class="col-lg-12 col-md-12 col-xs-12">
+               	<form  action="<?php echo $helper->url("ConsultaPedidos","generar_reporte_entregado"); ?>" method="post" enctype="multipart/form-data" target="_blank"  class="col-lg-12 col-md-12 col-xs-12">
                   <div class="row" style="margin-left:1px;">
 									<div class="col-lg-2 col-xs-12 col-md-2">
                         		    <div class="form-group">

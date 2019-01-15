@@ -92,7 +92,7 @@ class ConsultaPedidosController extends ControladorBase{
 	        
 	        $limit = " LIMIT   '$per_page' OFFSET '$offset'";
 	        
-	        $resultSet=$pedidos->getCondicionesPag($columnas, $tablas, $where_to, $id, $limit);
+	        $resultSet=$pedidos->getCondicionesPagDesc($columnas, $tablas, $where_to, $id, $limit);
 	        $count_query   = $cantidadResult;
 	        $total_pages = ceil($cantidadResult/$per_page);
 	        
@@ -144,7 +144,7 @@ class ConsultaPedidosController extends ControladorBase{
 	                $html.='<td style="font-size: 11px;">'.$res->nombre_usuarios.'</td>';
 	                $html.='<td style="font-size: 11px;">'.date("d/m/Y", strtotime($res->creado)).'</td>';
 	                
-	                $html.='<td style="font-size: 18px;"><span class="pull-right"><a href="index.php?controller=ConsultaPedidos&action=generar_reporte&id_pedidos='.$res->id_pedidos.'" class="btn btn-info" style="font-size:65%;"><i class="glyphicon glyphicon-print"></i></a></span></td>';
+	                $html.='<td style="font-size: 18px;"><span class="pull-right"><a href="index.php?controller=ConsultaPedidos&action=generar_reporte_entregado&id_pedidos='.$res->id_pedidos.'" class="btn btn-info" style="font-size:65%;"><i class="glyphicon glyphicon-print"></i></a></span></td>';
 	               
 	                $html.='</tr>';
 	            }
@@ -261,7 +261,7 @@ class ConsultaPedidosController extends ControladorBase{
 	
 			$limit = " LIMIT   '$per_page' OFFSET '$offset'";
 	
-			$resultSet=$pedidos->getCondicionesPag($columnas, $tablas, $where_to, $id, $limit);
+			$resultSet=$pedidos->getCondicionesPagDesc($columnas, $tablas, $where_to, $id, $limit);
 			$count_query   = $cantidadResult;
 			$total_pages = ceil($cantidadResult/$per_page);
 	
@@ -313,7 +313,7 @@ class ConsultaPedidosController extends ControladorBase{
 					}
 					$html.='<td style="font-size: 11px;">'.$res->nombre_usuarios.'</td>';
 					$html.='<td style="font-size: 11px;">'.date("d/m/Y", strtotime($res->creado)).'</td>';
-					$html.='<td style="font-size: 18px;"><span class="pull-right"><a href="index.php?controller=ConsultaPedidos&action=generar_reporte&id_pedidos='.$res->id_pedidos.'" class="btn btn-info" style="font-size:65%;"><i class="glyphicon glyphicon-print"></i></a></span></td>';
+					$html.='<td style="font-size: 18px;"><span class="pull-right"><a href="index.php?controller=ConsultaPedidos&action=generar_reporte_x_entregar&id_pedidos='.$res->id_pedidos.'" class="btn btn-info" style="font-size:65%;"><i class="glyphicon glyphicon-print"></i></a></span></td>';
 					$html.='<td style="font-size: 18px;"><span class="pull-right"><a href="index.php?controller=ConsultaPedidos&action=index&id_pedidos='.$res->id_pedidos.'" class="btn btn-success" style="font-size:65%;"><i class="glyphicon glyphicon-floppy-saved"></i></a></span></td>';
 					
 					$html.='</tr>';
@@ -558,11 +558,12 @@ class ConsultaPedidosController extends ControladorBase{
 	
 	
 	
-	public function generar_reporte(){
+	public function generar_reporte_x_entregar(){
 		
 
 		session_start();
-		$ordinario_detalle = new Ordinario_DetalleModel();
+		$pedidos = new PedidosModel();
+		$pedidos_detalle = new PedidosDetalleModel();
 		
 		$html="";
 		$cedula_usuarios = $_SESSION["cedula_usuarios"];
@@ -571,159 +572,188 @@ class ConsultaPedidosController extends ControladorBase{
 		$meses = array("Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre");
 		$fechaactual=$dias[date('w')]." ".date('d')." de ".$meses[date('n')-1]. " del ".date('Y') ;
 		 
-		$directorio = $_SERVER ['DOCUMENT_ROOT'] . '/webcapremci';
+		$directorio = $_SERVER ['DOCUMENT_ROOT'] . '/cevicheria';
 		$dom=$directorio.'/view/dompdf/dompdf_config.inc.php';
-		$domLogo=$directorio.'/view/images/lcaprem.png';
-		$logo = '<img src="'.$domLogo.'" alt="Responsive image" width="200" height="50">';
+		$domLogo=$directorio.'/view/images/agua.png';
+		$logo = '<img src="'.$domLogo.'" alt="Responsive image" width="130" height="70">';
 		 
 		
 		
 		if(!empty($cedula_usuarios)){
 				
-			if(isset($_POST["desde"]) && isset($_POST["hasta"])){
+		    
+		    
+			if(isset($_GET["id_pedidos"])){
 				
 				
-				$desde = $_POST["desde"];
-				$hasta = $_POST["hasta"];
-				$search = $_POST["search"];				
+			    $id_pedidos = $_GET["id_pedidos"];
 				
 				
-				$evaluacion = new EvaluacionFuncionariosModel();
-				$where_to="";
-				$where1="";
-				$where2="";
-				$columnas = "e.id_evaluacion_funcionarios,
-				  e.calificacion_funcionario,
-				  e.id_usuarios_funcionario,
-				  e.creado,
-				  e.id_usuarios_participe,
-				  u.cedula_usuarios as cedula_funcionario,
-				  u.nombre_usuarios as nombre_funcionario,
-				  e.id_usuarios_funcionario,
-				  (select us.cedula_usuarios from usuarios us where us.id_usuarios=e.id_usuarios_participe) as cedula_participe,
-				  (select us.nombre_usuarios from usuarios us where us.id_usuarios=e.id_usuarios_participe) as nombre_participe";
+				$columnas = "pedidos.id_pedidos, 
+                              clientes.id_clientes, 
+                              clientes.apellidos_clientes, 
+                              clientes.nombres_clientes, 
+                              clientes.identificacion_clientes, 
+                              usuarios.id_usuarios, 
+                              usuarios.cedula_usuarios, 
+                              usuarios.nombre_usuarios, 
+                              mesas.id_mesas, 
+                              mesas.nombre_mesas, 
+                              mesas.mesa_ocupada, 
+                              pedidos.numero_pedidos, 
+                              pedidos.valor_total_pedidos, 
+                              pedidos.cancelado_pedido, 
+                              pedidos.entregado_pedido, 
+                              pedidos.creado, 
+                              pedidos.modificado";
 				
-				$tablas   = " public.evaluacion_funcionarios e,
-  					  public.usuarios u";
-				$where    = "u.id_usuarios = e.id_usuarios_funcionario";
-				$id       = "e.id_evaluacion_funcionarios";
+				$tablas   = "public.pedidos, 
+                              public.clientes, 
+                              public.usuarios, 
+                              public.mesas";
+				$where    = "pedidos.id_usuarios_registra = usuarios.id_usuarios AND
+                              pedidos.id_mesas = mesas.id_mesas AND
+                              clientes.id_clientes = pedidos.id_clientes AND pedidos.id_pedidos='$id_pedidos'";
+				$id       = "pedidos.id_pedidos";
 				
 			
-			
-				if(!empty($search)){
+				$resultSetCabeza=$pedidos->getCondicionesDesc($columnas, $tablas, $where, $id);
 				
 				
-					if($desde!="" && $hasta!=""){
-							
-						$where2=" AND DATE(e.creado)  BETWEEN '$desde' AND '$hasta'";
-							
-							
-					}
-				
-					$where1=" AND (e.calificacion_funcionario LIKE '%".$search."%' OR u.cedula_usuarios LIKE '%".$search."%' OR u.nombre_usuarios LIKE '%".$search."%' )";
-				
-					$where_to=$where.$where1.$where2;
-				}else{
-					if($desde!="" && $hasta!=""){
-				
-						$where2=" AND DATE(e.creado)  BETWEEN '$desde' AND '$hasta'";
-				
-					}
-				
-					$where_to=$where.$where2;
-				
+				if(!empty($resultSetCabeza)){
+				    
+				    
+				    
+				    $_numero_pedido     =$resultSetCabeza[0]->numero_pedidos;
+				    $_numero_mesa       =$resultSetCabeza[0]->nombre_mesas;
+				    $_nombre_clientes   =$resultSetCabeza[0]->nombres_clientes;
+				    $_apellidos_clientes   =$resultSetCabeza[0]->apellidos_clientes;
+				    $_identificacion_clientes =$resultSetCabeza[0]->identificacion_clientes;
+				    
+				    
+				    $_cedula_usuarios       =$resultSetCabeza[0]->cedula_usuarios;
+				    $_nombre_usuarios       =$resultSetCabeza[0]->nombre_usuarios;
+				    $_estado_pedido         =$resultSetCabeza[0]->entregado_pedido;
+				    $_valor_total_pedidos   =$resultSetCabeza[0]->valor_total_pedidos;
+				    $_fecha_pedido          =date("d/m/Y", strtotime($resultSetCabeza[0]->creado));
+				    $_fecha_pedido=$dias[date('w')]." ".date('d')." de ".$meses[date('n')-1]. " del ".date('Y') ;
+				    
+				  
+				    
+				    
+				    $columnas1 = "pedidos_detalle.id_pedidos_detalle, 
+                                  pedidos_detalle.id_pedidos, 
+                                  productos.id_productos, 
+                                  productos.nombre_productos, 
+                                  productos.imagen_productos, 
+                                  pedidos_detalle.cantidad_productos, 
+                                  pedidos_detalle.valor_unitario, 
+                                  pedidos_detalle.valor_total, 
+                                  pedidos_detalle.entregado_pedido";
+				    
+				    $tablas1   = " public.pedidos_detalle, 
+                                    public.productos";
+				    $where1    = "productos.id_productos = pedidos_detalle.id_productos AND pedidos_detalle.id_pedidos='$id_pedidos' AND pedidos_detalle.entregado_pedido='FALSE'";
+				    $id1      = "pedidos_detalle.id_pedidos_detalle";
+				    
+				    
+				    $resultSetDetalle=$pedidos_detalle->getCondicionesDesc($columnas1, $tablas1, $where1, $id1);
+				    
+				    $html.='<p style="text-align: right;">'.$logo.'<hr style="height: 2px; background-color: black;"></p>';
+				    $html.='<p style="text-align: right; font-size: 13px;"><b>Fecha Pedido:</b> '.$_fecha_pedido.'</p>';
+				    $html.='<p style="text-align: center; font-size: 16px;"><b>PEDIDO No. '.$_numero_pedido.'</b></p>';
+				    
+				    $html.='<table style="width: 100%;">';
+				   
+				    $html.='<tr>';
+				    $html.='<th colspan="4" style="text-align:left; font-size: 13px;">Identificación</th>';
+				    $html.='<th colspan="4" style="text-align:left; font-size: 13px;">Nombre y Apellidos</th>';
+				    $html.='<th colspan="2" style="text-align:left; font-size: 13px;">Número Mesa</th>';
+				    $html.='<th colspan="2" style="text-align:left; font-size: 13px;">Estado Pedido</th>';
+				    $html.='</tr>';
+				    
+				    $html.='<tr>';
+				        
+				        $html.='<td colspan="4" style="text-align:left; font-size: 13px;">'.$_identificacion_clientes.'</td>';
+				        $html.='<td colspan="4" style="text-align:left; font-size: 13px;">'.$_nombre_clientes.' '.$_apellidos_clientes.'</td>';
+				        $html.='<td colspan="2" style="text-align:left; font-size: 13px;">'.$_numero_mesa.'</td>';
+				      
+				        if($_estado_pedido=='f'){
+				            $html.='<td colspan="2" style="text-align:left; font-size: 13px;">Pendiente</td>';
+				        }else{
+				            $html.='<td colspan="2" style="text-align:left; font-size: 13px;">Entregado</td>';
+				            
+				        }
+				   
+				    $html.='</tr>';
+				    $html.='</table>';
+				    
+				    
+				    if(!empty($resultSetDetalle)){
+				        
+				        
+				        
+				        $html.= "<table style='width: 100%; margin-top:40px;' border=1 cellspacing=0>";
+				        $html.= "<thead>";
+				        $html.= "<tr>";
+				        $html.='<th style="text-align: left;  font-size: 13px;"></th>';
+				        $html.='<th style="text-align: left;  font-size: 13px;">Nombre Producto</th>';
+				        $html.='<th style="text-align: left;  font-size: 13px;">Cantidad</th>';
+				        $html.='<th style="text-align: left;  font-size: 13px;">Valor C/U</th>';
+				        $html.='<th style="text-align: left;  font-size: 13px;">Valor Total</th>';
+				        $html.='</tr>';
+				        $html.='</thead>';
+				        $html.='<tbody>';
+				        
+				        $i=0;
+				       
+				        foreach ($resultSetDetalle as $res)
+				        {
+				           
+				            $i++;
+				            $html.='<tr>';
+				            $html.='<td><img src="'.$directorio.'/view/DevuelveImagenView.php?id_valor='.$res->id_productos.'&id_nombre=id_productos&tabla=productos&campo=imagen_productos" width="80" height="60"></td>';
+				            $html.='<td style="font-size: 11px;">'.$res->nombre_productos.'</td>';
+				            $html.='<td style="font-size: 11px;">'.$res->cantidad_productos.'</td>';
+				            $html.='<td style="font-size: 11px;">'.$res->valor_unitario.'</td>';
+				            $html.='<td style="font-size: 11px;">'.$res->valor_total.'</td>';
+				            $html.='</tr>';
+				        }
+				        
+				        
+				        $html.='</tbody>';
+				        $html.='</table>';
+				        
+				        
+				    }
+				    
+				    
+				    $html.='<table style="width: 100%; margin-top:40px;">';
+				    
+				    $html.='<tr>';
+				    $html.='<th colspan="4" style="text-align:left; font-size: 13px;">Funcionario que toma el pedido</th>';
+				    $html.='<th colspan="4" style="text-align:left; font-size: 13px;"></th>';
+				    $html.='<th colspan="2" style="text-align:left; font-size: 13px;"></th>';
+				    $html.='<th colspan="2" style="text-align:left; font-size: 13px;"></th>';
+				    $html.='</tr>';
+				    
+				    $html.='<tr>';
+				    
+				    $html.='<td colspan="4" style="text-align:left; font-size: 13px;">'.$_nombre_usuarios.'</td>';
+				    $html.='<td colspan="4" style="text-align:left; font-size: 13px;"></td>';
+				    $html.='<td colspan="2" style="text-align:left; font-size: 13px;"></td>';
+				    $html.='<td colspan="2" style="text-align:left; font-size: 13px;"></td>';
+				    
+				    $html.='</tr>';
+				    $html.='</table>';
+				    
+				    
+				    
 				}
-			
-				$resultSet=$evaluacion->getCondicionesDesc($columnas, $tablas, $where_to, $id);
 				
 				
-				$html.='<p style="text-align: right;">'.$logo.'<hr style="height: 2px; background-color: black;"></p>';
-				$html.='<p style="text-align: right; font-size: 13px;"><b>Impreso:</b> '.$fechaactual.'</p>';
-				$html.='<p style="text-align: center; font-size: 16px;"><b>CALIFICACIONES FUNCIONARIOS</b></p>';
 				
 				
-				if(!empty($resultSet)){
-					$cantidadResult=count($resultSet);
-					
-					
-					$html.='<span style="text-align: left;  font-size: 15px;"><strong>Total Registros: </strong>'.$cantidadResult.'</span>';
-					$html.= "<table style='width: 100%;' border=1 cellspacing=0>";
-					$html.= "<thead>";
-					$html.= "<tr>";
-					$html.='<th style="text-align: left;  font-size: 13px;"></th>';
-					$html.='<th style="text-align: left;  font-size: 13px;">Cedula Funcionario</th>';
-					$html.='<th style="text-align: left;  font-size: 13px;">Nombre Funcionario</th>';
-					$html.='<th style="text-align: left;  font-size: 13px;">Calificación</th>';
-					$html.='<th style="text-align: left;  font-size: 13px;">Cedula Participe</th>';
-					$html.='<th style="text-align: left;  font-size: 13px;">Nombre Participe</th>';
-					$html.='<th style="text-align: left;  font-size: 13px;">Fecha Registro</th>';
-					$html.='</tr>';
-					$html.='</thead>';
-					$html.='<tbody>';
-						
-					$i=0;
-					$Excelente=0;
-					$Bueno=0;
-					$Reguar=0;
-					$Malo=0;
-					foreach ($resultSet as $res)
-					{
-						
-						if($res->calificacion_funcionario=='Excelente'){
-							$Excelente++;
-						}
-						
-						if($res->calificacion_funcionario=='Bueno'){
-							$Bueno++;
-						}
-						
-						if($res->calificacion_funcionario=='Regular'){
-							$Reguar++;
-						}
-						if($res->calificacion_funcionario=='Malo'){
-							$Malo++;
-						}
-						
-						
-						$i++;
-						$html.='<tr>';
-						$html.='<td style="font-size: 11px;">'.$i.'</td>';
-						$html.='<td style="font-size: 11px;">'.$res->cedula_funcionario.'</td>';
-						$html.='<td style="font-size: 11px;">'.$res->nombre_funcionario.'</td>';
-						$html.='<td style="font-size: 11px;">'.$res->calificacion_funcionario.'</td>';
-						$html.='<td style="font-size: 11px;">'.$res->cedula_participe.'</td>';
-						$html.='<td style="font-size: 11px;">'.$res->nombre_participe.'</td>';
-						$html.='<td style="font-size: 11px;">'.date("d/m/Y", strtotime($res->creado)).'</td>';
-						$html.='</tr>';
-					}
-					
-					
-					$html.='</tbody>';
-					$html.='</table>';
-				
-					
-					
-					
-					
-					$html.= '<div style="text-align:center;">';
-					$html.= "<table style='width: 100%; margin-top:40px;' border=1 cellspacing=0>";
-					$html.='<tr>';
-					$html.='<th  style="text-align:center; font-size: 13px;">Excelente</th>';
-					$html.='<th  style="text-align:center; font-size: 13px;">Bueno</th>';
-					$html.='<th  style="text-align:center; font-size: 13px;">Regular</th>';
-					$html.='<th  style="text-align:center; font-size: 13px;">Malo</th>';
-					$html.='</tr>';
-						
-					$html.='<tr>';
-					$html.='<td  style="text-align:center; font-size: 13px;">'.$Excelente.'</td>';
-					$html.='<td  style="text-align:center; font-size: 13px;">'.$Bueno.'</td>';
-					$html.='<td  style="text-align:center; font-size: 13px;">'.$Reguar.'</td>';
-					$html.='<td  style="text-align:center; font-size: 13px;">'.$Malo.'</td>';
-					$html.='</tr>';
-					$html.='</table>';
-					$html.='</div>';
-					
-				}
 				
 				
 				
