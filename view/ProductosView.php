@@ -560,9 +560,8 @@
 				</div>
 				
 				
-				   <div class="tab-pane" id="inactivos">
-               
-					<div class="pull-right" style="margin-right:11px;">
+			   <div class="tab-pane" id="inactivos">
+               	    <div class="pull-right" style="margin-right:11px;">
 					<input type="text" value="" class="form-control" id="search_productos_inactivos" name="search_productos_inactivos" onkeyup="load_productos_inactivos(1)" placeholder="search.."/>
 					</div>
 					
@@ -573,13 +572,9 @@
 				
 				
 				
-				
 				</div>
 				</div>
 				</section>
-				
-				
-				
 				
 				
 				
@@ -615,26 +610,19 @@
 
 </div>
     
-    
-    
-  
+ 
  
      <!-- Bootstrap -->
     <script src="view/vendors/bootstrap/dist/js/bootstrap.min.js"></script>
     
-    
-    
     <!-- NProgress -->
     <script src="view/vendors/nprogress/nprogress.js"></script>
-   
    
     <!-- Datatables -->
     <script src="view/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
     
-    
     <script src="view/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
     <script src="view/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
-    
     
     
     <!-- Custom Theme Scripts -->
