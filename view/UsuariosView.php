@@ -54,6 +54,11 @@
                  <script src="view/js/jquery.js"></script>
 		         <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
         
+        
+        
+        
+        
+        
         <script type="text/javascript">
      
         	   $(document).ready( function (){
@@ -1268,6 +1273,9 @@
     <script src="view/build/js/custom.min.js"></script>
 	<script src="view/js/jquery.inputmask.bundle.js"></script>
 	<!-- codigo de las funciones -->
+
+
+
 
 	
   </body>

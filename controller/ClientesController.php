@@ -111,7 +111,6 @@ class ClientesController extends ControladorBase{
     			$html.='<th style="text-align: left;  font-size: 12px;">Apellidos</th>';
     			$html.='<th style="text-align: left;  font-size: 12px;">Nombres</th>';
     			$html.='<th style="text-align: left;  font-size: 12px;">Correo</th>';
-    			$html.='<th style="text-align: left;  font-size: 12px;">Teléfono</th>';
     			$html.='<th style="text-align: left;  font-size: 12px;">Celular</th>';
     			$html.='<th style="text-align: left;  font-size: 12px;">Provincia</th>';
     			$html.='<th style="text-align: left;  font-size: 12px;">Cantón</th>';
@@ -147,7 +146,6 @@ class ClientesController extends ControladorBase{
     				$html.='<td style="font-size: 11px;">'.$res->apellidos_clientes.'</td>';
     				$html.='<td style="font-size: 11px;">'.$res->nombres_clientes.'</td>';
     				$html.='<td style="font-size: 11px;">'.$res->correo_clientes.'</td>';
-    				$html.='<td style="font-size: 11px;">'.$res->telefono_clientes.'</td>';
     				$html.='<td style="font-size: 11px;">'.$res->celular_clientes.'</td>';
     				$html.='<td style="font-size: 11px;">'.$res->nombre_provincias.'</td>';
     				$html.='<td style="font-size: 11px;">'.$res->nombre_cantones.'</td>';
@@ -305,7 +303,6 @@ class ClientesController extends ControladorBase{
     			$html.='<th style="text-align: left;  font-size: 12px;">Apellidos</th>';
     			$html.='<th style="text-align: left;  font-size: 12px;">Nombres</th>';
     			$html.='<th style="text-align: left;  font-size: 12px;">Correo</th>';
-    			$html.='<th style="text-align: left;  font-size: 12px;">Teléfono</th>';
     			$html.='<th style="text-align: left;  font-size: 12px;">Celular</th>';
     			$html.='<th style="text-align: left;  font-size: 12px;">Provincia</th>';
     			$html.='<th style="text-align: left;  font-size: 12px;">Cantón</th>';
@@ -340,7 +337,6 @@ class ClientesController extends ControladorBase{
     				$html.='<td style="font-size: 11px;">'.$res->apellidos_clientes.'</td>';
     				$html.='<td style="font-size: 11px;">'.$res->nombres_clientes.'</td>';
     				$html.='<td style="font-size: 11px;">'.$res->correo_clientes.'</td>';
-    				$html.='<td style="font-size: 11px;">'.$res->telefono_clientes.'</td>';
     				$html.='<td style="font-size: 11px;">'.$res->celular_clientes.'</td>';
     				$html.='<td style="font-size: 11px;">'.$res->nombre_provincias.'</td>';
     				$html.='<td style="font-size: 11px;">'.$res->nombre_cantones.'</td>';
@@ -425,7 +421,7 @@ class ClientesController extends ControladorBase{
        		));
        
        
-}
+        }
        
        
        
@@ -581,7 +577,9 @@ class ClientesController extends ControladorBase{
 
 				$_pass_sistemas_usuarios = $_POST["clave_usuarios"];
 		
-		
+				$_id_usuarios = $_SESSION["id_usuarios"];
+				
+				
 				if($_id_clientes > 0){
 				  
 				  
@@ -603,7 +601,7 @@ class ClientesController extends ControladorBase{
 					$resultado=$clientes->UpdateBy($colval, $tabla, $where);
 					
 					
-
+                    /*
 					$imagen_usuarios="";
 					
 					$funcion = "ins_usuarios";
@@ -620,7 +618,7 @@ class ClientesController extends ControladorBase{
 					$usuarios->setFuncion($funcion);
 					$usuarios->setParametros($parametros);
 					$resultado=$usuarios->Insert();
-				  
+				 */ 
 				  
 				}else{
 		
@@ -638,13 +636,14 @@ class ClientesController extends ControladorBase{
 					'$_telefono_clientes',
 					'$_celular_clientes',
 					'$_correo_clientes',
-					'$_id_estado'";
+					'$_id_estado',
+                    '$_id_usuarios'";
 					$clientes->setFuncion($funcion);
 					$clientes->setParametros($parametros);
 					$resultado=$clientes->Insert();
 					 
 					 
-					
+					/*
 					$imagen_usuarios="";
 					 
 					$funcion = "ins_usuarios";
@@ -662,7 +661,7 @@ class ClientesController extends ControladorBase{
 					$usuarios->setParametros($parametros);
 					$resultado=$usuarios->Insert();
 					
-					
+					*/
 					 
 		
 				}
@@ -710,7 +709,7 @@ class ClientesController extends ControladorBase{
 		    $_id_estado            = $_POST["id_estado"];
 		    $_id_clientes            = $_POST["id_clientes"];
 		    
-		    
+		    $id_usuarios    = $_SESSION["id_usuarios"];
 		    
 		    
 		    if($_id_clientes > 0){
@@ -750,7 +749,8 @@ class ClientesController extends ControladorBase{
 		        	'$_telefono_clientes',
 		        	'$_celular_clientes',
 		        	'$_correo_clientes',
-		        	'$_id_estado'";
+		        	'$_id_estado',
+                    '$id_usuarios'";
 		        	$clientes->setFuncion($funcion);
 		        	$clientes->setParametros($parametros);
 		        	$resultado=$clientes->Insert();
