@@ -58,8 +58,8 @@
      
         	   $(document).ready( function (){
         		   pone_espera();
-        		   load_usuarios_activos(1);
         		   load_usuarios_inactivos(1);
+        		   load_productos_apedir(1);
 	   			});
 
         	   function pone_espera(){
@@ -83,7 +83,9 @@
         	   }
 
         	   
-        	   function load_usuarios_activos(pagina){
+        	   
+
+        	   function load_productos_apedir(pagina){
 
 
         		   var search=$("#search_activos").val();
@@ -94,25 +96,92 @@
                  $("#load_activos_registrados").fadeIn('slow');
            	     $.ajax({
            	               beforeSend: function(objeto){
-           	                 $("#load_activos_registrados").html('<center><img src="view/images/ajax-loader.gif"> Cargando...</center>')
+           	                 $("#load_productos_pedidos").html('<center><img src="view/images/ajax-loader.gif"> Cargando...</center>')
            	               },
-           	               url: 'index.php?controller=Usuarios&action=index10&search='+search,
+           	               url: 'index.php?controller=Pedidos&action=ajax_trae_productos&search='+search,
            	               type: 'POST',
            	               data: con_datos,
            	               success: function(x){
-           	                 $("#users_activos_registrados").html(x);
+           	                 $("#productos_pedidos").html(x);
            	               	 $("#tabla_usuarios").tablesorter(); 
-           	                 $("#load_activos_registrados").html("");
+           	                 $("#load_productos_pedidos").html("");
            	               },
            	              error: function(jqXHR,estado,error){
-           	                $("#users_activos_registrados").html("Ocurrio un error al cargar la informacion de Usuarios Activos..."+estado+"    "+error);
+           	                $("#productos_pedidos").html("Ocurrio un error al cargar la informacion de Usuarios Activos..."+estado+"    "+error);
            	              }
            	            });
 
 
            		   }
 
+        	   function agregar_pedido (id)
+        		{
+        		   var cantidad=document.getElementById('cantidad_'+id).value;
+        			//Inicia validacion
+        			if (isNaN(cantidad))
+        			{
+        			alert('Esto no es un numero');
+        			document.getElementById('cantidad_'+id).focus();
+        			return false;
+        			}
+        			
+           			var cliente = $("#id_clientes").val();
+           			var mesas = $("#id_mesas").val();
+        			        			
+        			$.ajax({
+        	            type: "POST",
+        	            url: 'index.php?controller=Pedidos&action=insertar_temp_pedido',
+        	            data: "id_productos="+id+"&id_clientes="+cliente+"&id_mesas="+mesas+"&cantidad="+cantidad,
+        	        	 beforeSend: function(objeto){
+        	        		/*$("#resultados").html("Mensaje: Cargando...");*/
+        	        	  },
+        	            success: function(datos){
+        	            	trae_pedidos_temp(1);
+        	        	}
+        			});
+        		}
 
+    	   function eliminar_pedido (id)
+       		{
+       		  
+       			        			
+       			$.ajax({
+       	            type: "POST",
+       	            url: 'index.php?controller=Pedidos&action=eliminar_temp_pedido',
+       	            data: "id_pedido_temp="+id,
+       	        	 beforeSend: function(objeto){
+       	        		/*$("#resultados").html("Mensaje: Cargando...");*/
+       	        	  },
+       	            success: function(datos){
+       	            	trae_pedidos_temp(1);
+       	        	}
+       			});
+       		}
+
+    	   function trae_pedidos_temp (pagina)
+       		{
+    		   	var cliente = $("#id_clientes").val();
+      			var mesas = $("#id_mesas").val();
+       			        			
+       			$.ajax({
+       	            type: "POST",
+       	            url: 'index.php?controller=Pedidos&action=ajax_trae_temp_pedidos',
+       	            data: "id_clientes="+cliente+"&id_mesas="+mesas+"&action=ajax&page="+pagina,
+       	        	 beforeSend: function(objeto){
+       	        		/*$("#resultados").html("Mensaje: Cargando...");*/
+       	        	  },
+       	            success: function(datos){
+       	            	$("#pedido_registrados").html(datos);
+      	               	 $("#tabla_temp_pedidos").tablesorter(); 
+      	                 $("#load_pedido_registrados").html("");
+       	        	},
+       	         	error: function(jqXHR,estado,error){
+    	                
+	              }
+       			});
+       		}
+
+        	   
         	   function load_usuarios_inactivos(pagina){
 
 
@@ -814,35 +883,102 @@
     <script type="text/javascript">
     $(document).ready(function(){
 
+    	 trae_mesas();
+
     	$("#btn_buscar_cliente").click(
     	    	function(){
 
     	    		var cedula=$("#cedula_clientes").val();
+    	    		var mesa=$("#id_mesas").val();
     	            var con_datos={
-    	     				  cedula_cliente:cedula
+    	     				  cedula_cliente:cedula,
+    	     				  id_mesas:mesa
     	     				  };
+   				  if(mesa>0 && cedula != ''){
     	          
-    	          $.ajax({
-    	                    beforeSend: function(objeto){
-    	                      /*buscar una funcion de cargando*/
-    	                    },
-    	                    url: 'index.php?controller=Pedidos&action=ajax_busca_cliente',
-    	                    type: 'POST',
-    	                    data: con_datos,
-    	                    success: function(x){
-    	                     /*trabajar con each de jquery*/
-       	                     alert('llego'); 
-
-       	                     $("#resultados_busqueda").html(x);
-    	                      
-    	                    },
-    	                   error: function(jqXHR,estado,error){
-    	                    /*alertar error*/
-    	                   }
-    	                 });
+        	          $.ajax({
+        	                    beforeSend: function(objeto){
+        	                      /*buscar una funcion de cargando*/
+        	                    },
+        	                    url: 'index.php?controller=Pedidos&action=ajax_busca_cliente',
+        	                    type: 'POST',
+        	                    data: con_datos,
+        	                    success: function(x){
+        	                     /*trabajar con each de jquery*/
+        	                     
+        	                     //console.log(x);
+        	                     
+        	                     try {
+                                        objeto = JSON.parse(x);
+                                       
+                                        var nombre = objeto[0].nombres_clientes;
+                                        var apellido = objeto[0].apellidos_clientes;
+                                        var celular = objeto[0].celular_clientes;
+                                        var correo = objeto[0].correo_clientes;
+                                        var codigo = objeto[0].id_clientes;
+    
+                                        
+                                        $('#nombre_clientes').val(nombre+' '+apellido);
+                                        $('#celular_clientes').val(celular);
+                                        $('#correo_clientes').val(correo);
+                                        $('#id_clientes').val(codigo);
+    
+                                        $('#id_mesa_selecionada').val($("#id_mesas").val());
+    
+                                        
+                                    }
+                                    catch (error) {
+                                        if(error instanceof SyntaxError) {
+                                            let mensaje = error.message;
+                                            console.log('ERROR EN LA SINTAXIS:', mensaje);
+                                        } else {
+                                            throw error; // si es otro error, que lo siga lanzando
+                                        }
+                                    }
+        	                     
+        	                      
+        	                    },
+        	                   error: function(jqXHR,estado,error){
+        	                    /*alertar error*/
+        	                   }
+        	                 });
+   				  }
 	                 
     	    	});
         });
+
+    function trae_mesas ()
+	{
+		        			
+		$.ajax({
+            type: "POST",
+            url: 'index.php?controller=Pedidos&action=ajax_mesas_disponibles',
+            data: '',
+        	 beforeSend: function(objeto){
+        		/*$("#resultados").html("Mensaje: Cargando...");*/
+        	  },
+            success: function(datos){
+
+        	try {
+        		objeto = JSON.parse(datos);
+        		
+               $.each(objeto, function (i, json) {      
+                    $("#id_mesas").append('<option value="' + json.id_mesas + '"> Mesa ' + json.nombre_mesas + '</option>');
+                  });
+               
+            }
+            catch (error) {
+                if(error instanceof SyntaxError) {
+                    let mensaje = error.message;
+                    console.log('ERROR EN LA SINTAXIS:', mensaje);
+                } else {
+                    throw error; // si es otro error, que lo siga lanzando
+                }
+            }
+        		
+        	}
+		});
+	}
     
     </script> 
         
@@ -911,7 +1047,7 @@
                   </div>
                   <div class="x_content">
                   
-            		<form  action="<?php echo $helper->url("Usuarios","InsertaUsuarios"); ?>" method="post" enctype="multipart/form-data"  class="col-lg-12 col-md-12 col-xs-12">
+            		<form  action="<?php echo $helper->url("Pedidos","insertaPedidos"); ?>" method="post" enctype="multipart/form-data"  class="col-lg-12 col-md-12 col-xs-12">
                                
                            <?php if ($resultEdit !="" ) { foreach($resultEdit as $resEdit) {?>
                                
@@ -1028,7 +1164,7 @@
                     		    <div class="col-xs-12 col-md-12 col-lg-12" style="text-align: center; margin-top:20px">
                     		    <div class="form-group">
                                                       <button type="submit" id="Guardar" name="Guardar" class="btn btn-success"><i class="glyphicon glyphicon-floppy-saved"> Actualizar</i></button>
-                                					   <a href="index.php?controller=Usuarios&action=index" class="btn btn-primary" ><i class="glyphicon glyphicon-floppy-remove"> Cancelar</i></a>
+                                					   <a href="index.php?controller=Pedidos&action=index" class="btn btn-primary" ><i class="glyphicon glyphicon-floppy-remove"> Cancelar</i></a>
 				  		
                                 					
                                 </div>
@@ -1043,7 +1179,16 @@
 									                    		   
                     		   
                     		 <div class="row">
-                    		    <div class="col-lg-4 col-xs-9 col-md-4">
+                    		 	<div class="col-lg-3 col-xs-12 col-md-3">
+                            		    <div class="form-group">
+                                              <label for="nombre_clientes" class="control-label">Mesa No.</label>
+                                              <select name="id_mesas" id="id_mesas"  class="form-control" >
+                                              	<option value="0" selected="selected">--Seleccione--</option>
+            									
+            								   </select> 
+                                        </div>
+                        		</div>
+                    		    <div class="col-lg-3 col-xs-9 col-md-3">
                     		    <div class="form-group">
                                                       <label for="cedula_clientes" class="control-label">Cedula:</label>
                                                       <input type="number" class="form-control" id="cedula_clientes" name="cedula_clientes" value=""  placeholder="cedula..">
@@ -1064,7 +1209,35 @@
                                
                     			
                     			<div class="row" id="resultados_busqueda">
-                    		                   
+                    		         
+                    		         <div class="col-lg-6 col-xs-12 col-md-6">
+                            		    <div class="form-group">
+                                              <label for="nombre_clientes" class="control-label">Nombres y Apellidos:</label>
+                                              <input type="text" class="form-control" id="nombre_clientes" name="nombre_clientes" value="" readonly />
+                                              <input type="hidden" class="form-control" id="id_clientes" name="id_clientes" value="" >
+                                              <input type="hidden" class="form-control" id="id_mesa_selecionada" name="id_mesa_selecionada" value="" >
+                                              <div id="mensaje_nombre_usuarios" class="errores"></div>
+                                        </div>
+                        		    </div>
+                        		    <div class="col-lg-3 col-xs-12 col-md-3">
+                            		    <div class="form-group">
+                                              <label for="celular_clientes" class="control-label">Celular:</label>
+                                              <input type="number" class="form-control" id="celular_clientes" name="celular_clientes" value=""  readonly />
+                                              <div id="mensaje_celular_usuarios" class="errores"></div>
+                                        </div>
+                                    </div> 
+                                    
+                                    <div class="col-lg-3 col-xs-12 col-md-3">
+                            		    <div class="form-group">
+                                              <label for="correo_clientes" class="control-label">Correo:</label>
+                                              <input type="text" class="form-control" id="correo_clientes" name="correo_clientes" value="" readonly />
+                                              <div id="mensaje_celular_usuarios" class="errores"></div>
+                                        </div>
+                                    </div> 
+                                    
+                                     <div class="col-lg-12 col-xs-12 col-md-12" id="pruebas_controller">
+                            		    
+                                    </div>          
                                 </div>
                     	           	
                     	           	
@@ -1098,7 +1271,7 @@
 		<div class="col-md-12 col-lg-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>LISTADO<small>Usuarios</small></h2>
+                    <h2>Pedidos<small>Clientes</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -1116,8 +1289,8 @@
                    <div class='nav-tabs-custom'>
           	       <ul id="myTabs" class="nav nav-tabs">
                  
-                    <li id="nav-activos" class="active"><a href="#activos" data-toggle="tab">Usuarios Activos</a></li>
-                    <li id="nav-inativos"><a href="#inactivos" data-toggle="tab" >Usuarios Inactivos</a></li>
+                    <li id="nav-activos" class="active"><a href="#activos" data-toggle="tab">Productos</a></li>
+                    <li id="nav-inativos"><a href="#inactivos" data-toggle="tab" >Listado Pedidos</a></li>
                	   </ul>
 				
 				
@@ -1126,12 +1299,12 @@
  		        <br>
                 <div class="tab-pane active" id="activos">
                 	<div class="pull-right" style="margin-right:11px;">
-					<input type="text" value="" class="form-control" id="search_activos" name="search_activos" onkeyup="load_usuarios_activos(1)" placeholder="search.."/>
+					<input type="text" value="" class="form-control" id="search_activos" name="search_activos" onkeyup="load_productos_apedir(1)" placeholder="search.."/>
 					</div>
 					
+					<div id="load_productos_pedidos" ></div>	
+					<div id="productos_pedidos"></div>
 					
-					<div id="load_activos_registrados" ></div>	
-					<div id="users_activos_registrados"></div>	
 				</div>
 				
 				
@@ -1143,9 +1316,9 @@
 					<input type="text" value="" class="form-control" id="search_inactivos" name="search_inactivos" onkeyup="load_usuarios_inactivos(1)" placeholder="search.."/>
 					</div>
 					
+					<div id="load_pedido_registrados" ></div>	
+					<div id="pedido_registrados"></div>
 					
-					<div id="load_inactivos_registrados" ></div>	
-					<div id="users_inactivos_registrados"></div>	
 				</div>
 				
 				
