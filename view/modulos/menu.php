@@ -43,22 +43,59 @@ $controladores=$_SESSION['controladores'];
                       <li style="<?php echo getcontrolador("Controladores",$controladores) ?>"><a href="index.php?controller=Controladores&action=index">Controladores</a></li>
                       <li style="<?php echo getcontrolador("Roles",$controladores) ?>"><a href="index.php?controller=Roles&action=index">Roles de Usuario</a></li>
                       <li style="<?php echo getcontrolador("PermisosRoles",$controladores) ?>"><a href="index.php?controller=PermisosRoles&action=index">Permisos Roles</a></li>
-                      <li style="<?php echo getcontrolador("Sesiones",$controladores) ?>"><a href="index.php?controller=Sesiones&action=index">Sesiones</a></li>
+                    </ul>
+                    
+                  </li>
+
+                  
+                  
+                   <li  style="<?php echo getcontrolador("MenuMantenimiento",$controladores) ?>"  ><a    ><i class="fa fa-users"></i> Mantenimiento <span class="fa fa-chevron-down"></span></a>
+
+                    <ul class="nav child_menu">
                       <li style="<?php echo getcontrolador("Clientes",$controladores) ?>"><a href="index.php?controller=Clientes&action=index">Clientes</a></li>
                       <li style="<?php echo getcontrolador("Ingredientes",$controladores) ?>"><a href="index.php?controller=Ingredientes&action=index">Ingredientes</a></li>
                       <li style="<?php echo getcontrolador("Productos",$controladores) ?>"><a href="index.php?controller=Productos&action=index">Productos</a></li>
-                      <li style="<?php echo getcontrolador("Productos",$controladores) ?>"><a href="index.php?controller=Pedidos&action=index">Pedidos</a></li>
-                   
-                    </ul>
+                   </ul>
                   </li>
                   
-                  <li  style="<?php echo getcontrolador("MenuServiciosLinea",$controladores) ?>"  ><a    ><i class="fa fa-bars"></i> Servicios en Linea <span class="fa fa-chevron-down"></span></a>
+                
+                  <li style="<?php echo getcontrolador("MenuProcesos",$controladores) ?>"  ><a    ><i class="fa fa-users"></i> Procesos <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                    
+                       <li style="<?php echo getcontrolador("Pedidos",$controladores) ?>"><a href="index.php?controller=Pedidos&action=index">Pedidos</a></li>
+                       <li style="<?php echo getcontrolador("ConsultaPedidos",$controladores) ?>"><a href="index.php?controller=ConsultaPedidos&action=index">Consulta Pedidos</a></li>
+                       <li style="<?php echo getcontrolador("Factura",$controladores) ?>"><a href="index.php?controller=Factura&action=index">Facturar</a></li>
+                   </ul>
+                  </li>
+                
+                
+                 <li style="<?php echo getcontrolador("MenuReportes",$controladores) ?>"  ><a    ><i class="fa fa-users"></i> Reportes <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                       <li style="<?php echo getcontrolador("Sesiones",$controladores) ?>"><a href="index.php?controller=Sesiones&action=index">Sesiones</a></li>
+                       <li style="<?php echo getcontrolador("Actividades",$controladores) ?>"><a href="index.php?controller=Actividades&action=index">Actividades</a></li>
+                   </ul>
+                  </li>
+                  
+                  <li style="<?php echo getcontrolador("MenuMesero",$controladores) ?>"  ><a    ><i class="fa fa-bars"></i> Mesero <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                     <li style="<?php echo getcontrolador("Pedidos",$controladores) ?>"><a href="index.php?controller=Pedidos&action=index">Pedidos</a></li>
+                     <li style="<?php echo getcontrolador("Clientes",$controladores) ?>"><a href="index.php?controller=Clientes&action=index">Clientes</a></li>
                       </ul>
                   </li>
                   
                   
+                   <li  style="<?php echo getcontrolador("MenuCajero",$controladores) ?>"  ><a    ><i class="fa fa-bars"></i> Cajero <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                     <li style="<?php echo getcontrolador("Factura",$controladores) ?>"><a href="index.php?controller=Factura&action=index">Facturar</a></li>
+                     <li style="<?php echo getcontrolador("Clientes",$controladores) ?>"><a href="index.php?controller=Clientes&action=index">Clientes</a></li>
+                      </ul>
+                  </li>
+                  
+                   <li  style="<?php echo getcontrolador("MenuCocinero",$controladores) ?>"  ><a    ><i class="fa fa-bars"></i> Cocinero <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                     <li style="<?php echo getcontrolador("ConsultaPedidos",$controladores) ?>"><a href="index.php?controller=ConsultaPedidos&action=index">Consulta Pedidos</a></li>
+                     <li style="<?php echo getcontrolador("Clientes",$controladores) ?>"><a href="index.php?controller=Clientes&action=index">Clientes</a></li>
+                      </ul>
+                  </li>
                   
                 </ul>
               </div>
