@@ -100,44 +100,44 @@
      
         	   $(document).ready( function (){
         		   pone_espera();
-        		   load_calificaciones(1);
+        		   load_pedidos_x_entregar(1);
+        		   load_pedidos_entregados(1);
 
 
-        		 			  $("#buscar").click(function() 
+        		 			  $("#buscar_x_entregar").click(function() 
         					{
         				    	var regex = /[\w-\.]{2,}@([\w-]{2,}\.)*([\w-]{2,}\.)[\w-]{2,4}/;
         				    	var validaFecha = /([0-9]{4})\-([0-9]{2})\-([0-9]{2})/;
 
-        				    	var desde = $("#desde").val();
-        				    	var hasta = $("#hasta").val();
+        				    	var desde = $("#desde_x_entregar").val();
+        				    	var hasta = $("#hasta_x_entregar").val();
         				    	
         				    	
-        				    	
-
-
         						if(desde > hasta){
 
-        							$("#mensaje_desde").text("Fecha desde no puede ser mayor a hasta");
-        				    		$("#mensaje_desde").fadeIn("slow"); //Muestra mensaje de error
+        							$("#mensaje_desde_x_entregar").text("Fecha desde no puede ser mayor a hasta");
+        				    		$("#mensaje_desde_x_entregar").fadeIn("slow"); //Muestra mensaje de error
         				            return false;
         				            
             					}else 
         				    	{
-        				    		$("#mensaje_desde").fadeOut("slow"); //Muestra mensaje de error
-        				    		load_calificaciones(1);
+        				    		$("#mensaje_desde_x_entregar").fadeOut("slow"); //Muestra mensaje de error
+        				    		load_pedidos_x_entregar(1);
+        			        		   
         						} 
 
 
         						if(hasta < desde){
 
-        							$("#mensaje_hasta").text("Fecha hasta no puede ser menor a desde");
-        				    		$("#mensaje_hasta").fadeIn("slow"); //Muestra mensaje de error
+        							$("#mensaje_hasta_x_entregar").text("Fecha hasta no puede ser menor a desde");
+        				    		$("#mensaje_hasta_x_entregar").fadeIn("slow"); //Muestra mensaje de error
         				            return false;
         				            
             					}else 
         				    	{
-        				    		$("#mensaje_hasta").fadeOut("slow"); //Muestra mensaje de error
-        				    		load_calificaciones(1);
+        				    		$("#mensaje_hasta_x_entregar").fadeOut("slow"); //Muestra mensaje de error
+        				    		load_pedidos_x_entregar(1);
+        			        		   
         						} 
         						
         				    					    
@@ -145,15 +145,63 @@
         					}); 
 
 
-        				        $( "#desde" ).focus(function() {
-        						  $("#mensaje_desde").fadeOut("slow");
+
+        		 			  $("#buscar_entregados").click(function() 
+        					{
+        				    	var regex = /[\w-\.]{2,}@([\w-]{2,}\.)*([\w-]{2,}\.)[\w-]{2,4}/;
+        				    	var validaFecha = /([0-9]{4})\-([0-9]{2})\-([0-9]{2})/;
+
+        				    	var desde = $("#desde_entregados").val();
+        				    	var hasta = $("#hasta_entregados").val();
+        				    	
+        				    	
+        						if(desde > hasta){
+
+        							$("#mensaje_desde_entregados").text("Fecha desde no puede ser mayor a hasta");
+        				    		$("#mensaje_desde_entregados").fadeIn("slow"); //Muestra mensaje de error
+        				            return false;
+        				            
+            					}else 
+        				    	{
+        				    		$("#mensaje_desde_entregados").fadeOut("slow"); //Muestra mensaje de error
+        				    	
+        			        		   load_pedidos_entregados(1);
+        						} 
+
+
+        						if(hasta < desde){
+
+        							$("#mensaje_hasta_entregados").text("Fecha hasta no puede ser menor a desde");
+        				    		$("#mensaje_hasta_entregados").fadeIn("slow"); //Muestra mensaje de error
+        				            return false;
+        				            
+            					}else 
+        				    	{
+        				    		$("#mensaje_hasta_entregados").fadeOut("slow"); //Muestra mensaje de error
+        				    	
+        			        		   load_pedidos_entregados(1);
+        						} 
+        						
+        				    					    
+
+        					}); 
+
+
+        				        $( "#desde_x_entregar" ).focus(function() {
+        						  $("#mensaje_desde_x_entregar").fadeOut("slow");
         					    });
         						
-        				        $( "#hasta" ).focus(function() {
-          						  $("#mensaje_hasta").fadeOut("slow");
+        				        $( "#hasta_x_entregar" ).focus(function() {
+          						  $("#mensaje_hasta_x_entregar").fadeOut("slow");
           					    });
         						
-
+        				        $( "#desde_entregados" ).focus(function() {
+          						  $("#mensaje_desde_entregados").fadeOut("slow");
+          					    });
+          						
+          				        $( "#hasta_entregados" ).focus(function() {
+            						  $("#mensaje_hasta_entregados").fadeOut("slow");
+            					 });
 
         		   
 	   			});
@@ -179,38 +227,72 @@
         	   }
 
         	   
-        	   function load_calificaciones(pagina){
+        	   function load_pedidos_x_entregar(pagina){
 
 
-        		   var search=$("#search").val();
-        		   var desde=$("#desde").val();
-        		   var hasta=$("#hasta").val();
+        		   var search=$("#search_pedidos_x_entregar").val();
+        		   var desde=$("#desde_x_entregar").val();
+        		   var hasta=$("#hasta_x_entregar").val();
                    var con_datos={
            					  action:'ajax',
            					  page:pagina,
            					  desde:desde,
            					  hasta:hasta
            					  };
-                 $("#load_registrados").fadeIn('slow');
+                 $("#load_pedidos_x_entregar_registrados").fadeIn('slow');
            	     $.ajax({
            	               beforeSend: function(objeto){
-           	                 $("#load_registrados").html('<center><img src="view/images/ajax-loader.gif"> Cargando...</center>')
+           	                 $("#load_pedidos_x_entregar_registrados").html('<center><img src="view/images/ajax-loader.gif"> Cargando...</center>')
            	               },
-           	               url: 'index.php?controller=Calificaciones&action=search&search='+search,
+           	               url: 'index.php?controller=ConsultaPedidos&action=search_x_entregar&search='+search,
            	               type: 'POST',
            	               data: con_datos,
            	               success: function(x){
-           	                 $("#calificaciones_realizadas_registrados").html(x);
-           	               	 $("#tabla_calificaciones_realizadas").tablesorter(); 
-           	                 $("#load_registrados").html("");
+           	                 $("#pedidos_x_entregar_registrados").html(x);
+           	               	 $("#tabla_pedidos_x_entregar").tablesorter(); 
+           	                 $("#load_pedidos_x_entregar_registrados").html("");
            	               },
            	              error: function(jqXHR,estado,error){
-           	                $("#calificaciones_realizadas_registrados").html("Ocurrio un error al cargar la informacion de encuestas realizadas..."+estado+"    "+error);
+           	                $("#pedidos_x_entregar_registrados").html("Ocurrio un error al cargar la informacion de pedidos x entregar..."+estado+"    "+error);
            	              }
            	            });
 
 
            		   }
+
+        	   function load_pedidos_entregados(pagina){
+
+
+        		   var search=$("#search_pedidos_entregados").val();
+        		   var desde=$("#desde_entregados").val();
+        		   var hasta=$("#hasta_entregados").val();
+                   var con_datos={
+           					  action:'ajax',
+           					  page:pagina,
+           					  desde:desde,
+           					  hasta:hasta
+           					  };
+                 $("#load_pedidos_entregados_registrados").fadeIn('slow');
+           	     $.ajax({
+           	               beforeSend: function(objeto){
+           	                 $("#load_pedidos_entregados_registrados").html('<center><img src="view/images/ajax-loader.gif"> Cargando...</center>')
+           	               },
+           	               url: 'index.php?controller=ConsultaPedidos&action=search_entregados&search='+search,
+           	               type: 'POST',
+           	               data: con_datos,
+           	               success: function(x){
+           	                 $("#pedidos_entregados_registrados").html(x);
+           	               	 $("#tabla_pedidos_entregados").tablesorter(); 
+           	                 $("#load_pedidos_entregados_registrados").html("");
+           	               },
+           	              error: function(jqXHR,estado,error){
+           	                $("#pedidos_entregados_registrados").html("Ocurrio un error al cargar la informacion de pedidos entregados..."+estado+"    "+error);
+           	              }
+           	            });
+
+
+           		   }
+       		   
         </script>
         
       
@@ -281,11 +363,10 @@
          </section>
        
   
-		
-		<div class="col-md-12 col-lg-12 col-xs-12">
+  	<div class="col-md-12 col-lg-12 col-xs-12">
                 <div class="x_panel">
                   <div class="x_title">
-                    <h2>Consulta<small>Pedidos Registrados</small></h2>
+                    <h2>Panel<small>Pedidos</small></h2>
                     <ul class="nav navbar-right panel_toolbox">
                       <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                       </li>
@@ -296,31 +377,49 @@
                     <div class="clearfix"></div>
                   </div>
                   <div class="x_content">
-                  
-                  
-                  <form  action="<?php echo $helper->url("ConsultaPedidos","generar_reporte"); ?>" method="post" enctype="multipart/form-data" target="_blank"  class="col-lg-12 col-md-12 col-xs-12">
+                    
+     <section class="content">
+                   <div class='nav-tabs-custom'>
+          	       <ul id="myTabs" class="nav nav-tabs">
+                 
+                    <li id="nav-entregar" class="active"><a href="#entregar" data-toggle="tab">Pedidos por Entregar</a></li>
+                     <li id="nav-entregados"><a href="#entregados" data-toggle="tab" >Pedidos Entregados</a></li>
+                   </ul>
+				
+				
+				
+				<div class="tab-content">
+ 		        <br>
+                <div class="tab-pane active" id="entregar">
+                
+					
+				<form  action="<?php echo $helper->url("ConsultaPedidos","generar_reporte_x_entregar"); ?>" method="post" enctype="multipart/form-data" target="_blank"  class="col-lg-12 col-md-12 col-xs-12">
                   <div class="row" style="margin-left:1px;">
+									
 									<div class="col-lg-2 col-xs-12 col-md-2">
                         		    <div class="form-group">
-                                                          <label for="desde" class="control-label">Desde:</label>
-                                                          <input type="date" class="form-control" id="desde" name="desde" value="" >
-                                                          <div id="mensaje_desde" class="errores"></div>
+                                                          <label for="desde_x_entregar" class="control-label">Desde:</label>
+                                                          <input type="date" class="form-control" id="desde_x_entregar" name="desde_x_entregar" value="" >
+                                                          <div id="mensaje_desde_x_entregar" class="errores"></div>
                                     </div>
                         		    </div>
                         		    
+                        		    
+                        		    
                         		    <div class="col-lg-2 col-xs-12 col-md-2">
                         		    <div class="form-group">
-                                                          <label for="hasta" class="control-label">Hasta:</label>
-                                                          <input type="date" class="form-control" id="hasta" name="hasta" value="">
-                                                          <div id="mensaje_hasta" class="errores"></div>
+                                                          <label for="hasta_x_entregar" class="control-label">Hasta:</label>
+                                                          <input type="date" class="form-control" id="hasta_x_entregar" name="hasta_x_entregar" value="">
+                                                          <div id="mensaje_hasta_x_entregar" class="errores"></div>
                                                
                                     </div>
                                     </div>
                         		    
+                        		    
                         		    <div class="col-xs-12 col-md-2 col-lg-2" style="text-align: center; margin-top:22px">
                     		        <div class="form-group">
-                        		    <button type="button" id="buscar" name="buscar" class="btn btn-info"><i class="glyphicon glyphicon-search"></i></button>
-                                	<button type="submit" id="reporte" name="reporte" class="btn btn-success"><i class="glyphicon glyphicon-print"></i></button>
+                        		    <button type="button" id="buscar_x_entregar" name="buscar_x_entregar" class="btn btn-info"><i class="glyphicon glyphicon-search"></i></button>
+                                	<button type="submit" id="reporte_x_entregar" name="reporte_x_entregar" class="btn btn-success"><i class="glyphicon glyphicon-print"></i></button>
                                 	
                                 	</div>
                                     </div>
@@ -329,23 +428,79 @@
 				  
 					
 					<div class="pull-right" style="margin-right:11px;">
-					<input type="text" value="" class="form-control" id="search" name="search" onkeyup="load_calificaciones(1)" placeholder="search.."/>
+					<input type="text" value="" class="form-control" id="search_pedidos_x_entregar" name="search_pedidos_x_entregar" onkeyup="load_pedidos_x_entregar(1)" placeholder="search.."/>
 					</div>
 					
 					
-					<div id="load_registrados" ></div>	
-					<div id="calificaciones_realizadas_registrados"></div>	
+					<div id="load_pedidos_x_entregar_registrados" ></div>	
+					<div id="pedidos_x_entregar_registrados"></div>	
 				
-					</form>
-                
-                  </div>
-                
-                </div>
-                
-                
-		       
-                
-              </div>
+			 </form>
+					
+					
+				 
+				</div>
+				
+				
+				<div class="tab-pane" id="entregados">
+               
+               
+               	<form  action="<?php echo $helper->url("ConsultaPedidos","generar_reporte_entregado"); ?>" method="post" enctype="multipart/form-data" target="_blank"  class="col-lg-12 col-md-12 col-xs-12">
+                  <div class="row" style="margin-left:1px;">
+									<div class="col-lg-2 col-xs-12 col-md-2">
+                        		    <div class="form-group">
+                                                          <label for="desde_entregados" class="control-label">Desde:</label>
+                                                          <input type="date" class="form-control" id="desde_entregados" name="desde_entregados" value="" >
+                                                          <div id="mensaje_desde_entregados" class="errores"></div>
+                                    </div>
+                        		    </div>
+                        		    
+                        		    <div class="col-lg-2 col-xs-12 col-md-2">
+                        		    <div class="form-group">
+                                                          <label for="hasta_entregados" class="control-label">Hasta:</label>
+                                                          <input type="date" class="form-control" id="hasta_entregados" name="hasta_entregados" value="">
+                                                          <div id="mensaje_hasta_entregados" class="errores"></div>
+                                               
+                                    </div>
+                                    </div>
+                        		    
+                        		    <div class="col-xs-12 col-md-2 col-lg-2" style="text-align: center; margin-top:22px">
+                    		        <div class="form-group">
+                        		    <button type="button" id="buscar_entregados" name="buscar_entregados" class="btn btn-info"><i class="glyphicon glyphicon-search"></i></button>
+                                	<button type="submit" id="reporte_entregados" name="reporte_entregados" class="btn btn-success"><i class="glyphicon glyphicon-print"></i></button>
+                                	
+                                	</div>
+                                    </div>
+                        		    
+				  </div>
+				  
+					
+					<div class="pull-right" style="margin-right:11px;">
+					<input type="text" value="" class="form-control" id="search_pedidos_entregados" name="search_pedidos_entregados" onkeyup="load_pedidos_entregados(1)" placeholder="search.."/>
+					</div>
+					
+					
+					<div id="load_pedidos_entregados_registrados" ></div>	
+					<div id="pedidos_entregados_registrados"></div>	
+				
+			 </form>
+						
+				
+				</div>
+				
+				
+				
+				
+				</div>
+				</div>
+				</section>
+  
+  
+  </div>
+                    </div>
+                    </div>
+					
+		
 		
 		
       
