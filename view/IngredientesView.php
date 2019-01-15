@@ -72,18 +72,33 @@
 			{
 		   
 		    	var nombre_ingredientes = $("#nombre_ingredientes").val();
+		    	var id_estado = $("#id_estado").val();
 		    
 		   				
 		    	if (nombre_ingredientes == "")
 		    	{
 			    	
-		    		$("#mensaje_nombres").text("Introduzca un nombre");
-		    		$("#mensaje_nombres").fadeIn("slow"); //Muestra mensaje de error
+		    		$("#mensaje_nombre_ingredientes").text("Introduzca un nombre");
+		    		$("#mensaje_nombre_ingredientes").fadeIn("slow"); //Muestra mensaje de error
 		            return false;
 			    }
 		    	else 
 		    	{
-		    		$("#mensaje_nombres").fadeOut("slow"); //Muestra mensaje de error
+		    		$("#mensaje_nombre_ingredientes").fadeOut("slow"); //Muestra mensaje de error
+		            
+				}
+
+
+		    	if (id_estado == 0)
+		    	{
+			    	
+		    		$("#mensaje_id_estado").text("Seleccione");
+		    		$("#mensaje_id_estado").fadeIn("slow"); //Muestra mensaje de error
+		            return false;
+			    }
+		    	else 
+		    	{
+		    		$("#mensaje_id_estado").fadeOut("slow"); //Muestra mensaje de error
 		            
 				}
 		    
@@ -91,7 +106,10 @@
 
 	
 				$( "#nombre_ingredientes" ).focus(function() {
-					$("#mensaje_nombres").fadeOut("slow");
+					$("#mensaje_nombre_ingredientes").fadeOut("slow");
+    			});
+				$( "#id_estado" ).focus(function() {
+					$("#mensaje_id_estado").fadeOut("slow");
     			});
 				
 	}); 
@@ -187,9 +205,24 @@
                                                               <label for="nombre_ingredientes" class="control-label">Nombre Ingredientes</label>
                                                               <input type="text" class="form-control" id="nombre_ingredientes" name="nombre_ingredientes" value="<?php echo $resEdit->nombre_ingredientes; ?>"  placeholder="Nombre Ingredientes">
                                                                <input type="hidden" name="id_ingredientes" id="id_ingredientes" value="<?php echo $resEdit->id_ingredientes; ?>" class="form-control"/>
-					                                          <div id="mensaje_nombres" class="errores"></div>
+					                                          <div id="mensaje_nombre_ingredientes" class="errores"></div>
                                         </div>
                             		  </div>
+                            		  
+                            		    <div class="col-lg-2 col-xs-12 col-md-2">
+                    		    <div class="form-group">
+                                                          <label for="id_estado" class="control-label">Estado:</label>
+                                                          <select name="id_estado" id="id_estado"  class="form-control" >
+                                                          <option value="0" selected="selected">--Seleccione--</option>
+                        								  
+                        								  <?php foreach($resultEst as $res) {?>
+                        										<option value="<?php echo $res->id_estado; ?>" <?php if ($res->id_estado == $resEdit->id_estado )  echo  ' selected="selected" '  ;  ?>><?php echo $res->nombre_estado; ?> </option>
+                        							        <?php } ?>
+                        							      
+                        								  </select> 
+                                                          <div id="mensaje_id_estado" class="errores"></div>
+                                </div>
+                    		    </div>
                         			</div>	
             
             
@@ -203,9 +236,24 @@
                             		    <div class="form-group">
                                                               <label for="nombre_ingredientes" class="control-label">Nombres Ingredientes</label>
                                                               <input type="text" class="form-control" id="nombre_ingredientes" name="nombre_ingredientes" value=""  placeholder="Nombre Ingredientes">
-                                                              <div id="mensaje_nombres" class="errores"></div>
+                                                              <div id="mensaje_nombre_ingredientes" class="errores"></div>
                                         </div>
                             		  </div>
+                            		  
+                            		      <div class="col-lg-2 col-xs-12 col-md-2">
+                    		    <div class="form-group">
+                                                          <label for="id_estado" class="control-label">Estado:</label>
+                                                          <select name="id_estado" id="id_estado"  class="form-control" >
+                                                          <option value="0" selected="selected">--Seleccione--</option>
+                        								  
+                        								  <?php foreach($resultEst as $res) {?>
+                        										<option value="<?php echo $res->id_estado; ?>" ><?php echo $res->nombre_estado; ?> </option>
+                        							        <?php } ?>
+                        							      
+                        								  </select> 
+                                                          <div id="mensaje_id_estado" class="errores"></div>
+                                </div>
+                    		    </div>
                         			</div>	
 							    
 								   
@@ -253,6 +301,7 @@
                         <tr>
                           <th>#</th>
                           <th>Nombre Ingrediente</th>
+                          <th>Estado</th>
                           <th></th>
                           <th></th>
                         </tr>
@@ -266,18 +315,31 @@
             	        		<tr>
             	                   <td > <?php echo $i; ?>  </td>
             		               <td > <?php echo $res->nombre_ingredientes; ?>     </td> 
+            		               <td > <?php echo $res->nombre_estado; ?>     </td> 
             		               <td>
             			           		<div class="right">
             			                    <a href="<?php echo $helper->url("Ingredientes","index"); ?>&id_ingredientes=<?php echo $res->id_ingredientes; ?>" class="btn btn-warning" style="font-size:65%;"><i class='glyphicon glyphicon-edit'></i></a>
             			                </div>
             			            
             			             </td>
-            			             <td>   
+            			             
+            			             
+            			             <?php if($res->nombre_estado == 'Activo'){?>
+ 									<td>   
             			                	<div class="right">
             			                    <a href="<?php echo $helper->url("Ingredientes","borrarId"); ?>&id_ingredientes=<?php echo $res->id_ingredientes; ?>" class="btn btn-danger" style="font-size:65%;"><i class="glyphicon glyphicon-trash"></i></a>
             			                </div>
             			              
             		               </td>
+									<?php }else{?>       
+									 <td>   
+            			                	<div class="right">
+            			                    <a href="javascript:void(0);" class="btn btn-danger" style="font-size:65%;" disabled><i class="glyphicon glyphicon-trash"></i></a>
+            			                </div>
+            			              
+            		               </td>
+									<?php }?>       			             
+            			            
             		    		</tr>
             		        <?php } } ?>
                     
