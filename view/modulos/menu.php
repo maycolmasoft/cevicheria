@@ -43,11 +43,14 @@ $controladores=$_SESSION['controladores'];
                       <li style="<?php echo getcontrolador("Controladores",$controladores) ?>"><a href="index.php?controller=Controladores&action=index">Controladores</a></li>
                       <li style="<?php echo getcontrolador("Roles",$controladores) ?>"><a href="index.php?controller=Roles&action=index">Roles de Usuario</a></li>
                       <li style="<?php echo getcontrolador("PermisosRoles",$controladores) ?>"><a href="index.php?controller=PermisosRoles&action=index">Permisos Roles</a></li>
-                   </ul>
+                    </ul>
+                    
                   </li>
+
                   
                   
                    <li  style="<?php echo getcontrolador("MenuMantenimiento",$controladores) ?>"  ><a    ><i class="fa fa-users"></i> Mantenimiento <span class="fa fa-chevron-down"></span></a>
+
                     <ul class="nav child_menu">
                       <li style="<?php echo getcontrolador("Clientes",$controladores) ?>"><a href="index.php?controller=Clientes&action=index">Clientes</a></li>
                       <li style="<?php echo getcontrolador("Ingredientes",$controladores) ?>"><a href="index.php?controller=Ingredientes&action=index">Ingredientes</a></li>
